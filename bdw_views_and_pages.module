@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the BDW Views and pages feature.
+ */
+
+include_once 'bdw_views_and_pages.features.inc';
