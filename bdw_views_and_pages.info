@@ -44,5 +44,5 @@ features[views_view][] = user_bda_photos_d7
 features[views_view][] = user_photos_d7
 features[views_view][] = user_profile_information
 features[views_view][] = user_recommendations
-features[views_view][] = view_users_with_filter
+features[views_view][] = view_users_with_filter_d7
 features_exclude[dependencies][ctools] = ctools

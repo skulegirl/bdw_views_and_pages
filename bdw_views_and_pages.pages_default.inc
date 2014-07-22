@@ -619,17 +619,12 @@ function bdw_views_and_pages_default_page_manager_handlers() {
     'css' => '',
     'contexts' => array(
       0 => array(
-        'name' => 'user',
-        'id' => 1,
         'identifier' => 'LoggedInUser',
         'keyword' => 'logged_in_user',
-        'context_settings' => array(
-          'type' => 'current',
-          'user' => '',
-          'uid' => '',
-        ),
+        'name' => 'user',
         'type' => 'current',
-        'uid' => NULL,
+        'uid' => '',
+        'id' => 1,
       ),
     ),
     'relationships' => array(
@@ -1006,42 +1001,6 @@ return $has_bda;',
           ),
           'not' => FALSE,
         ),
-        2 => array(
-          'name' => 'php',
-          'settings' => array(
-            'description' => 'User is not flagged as BDA but has not explicitly disabled it',
-            'php' => 'global $user;
-$flag=flag_get_flag(\'boondocking_available\');
-$has_bda = $flag->is_flagged($user->uid);
-if (!empty($contexts[\'argument_entity_id:user_1\']->data->field_ba_bda_pref))
-{
-   $no_bda_explicit = $contexts[\'relationship_profile2_from_user_1\']->data->field_ba_bda_pref[\'und\'][0][\'value\'];
-}
-else
-{
-   $no_bda_explicit = false;
-}
-$condition = (!$no_bda_explicit && !$has_bda);
-return $condition;
-
-
-
-/*
-if ($context=$contexts[relationship_node_from_user_1])
-{
-   if ($data=$context->data)
-   {
-        if(location_has_coordinates($data->field_boondock_location[0]))
-        {
-             return FALSE;
-        }
-    }
-}
-return TRUE;
-*/',
-          ),
-          'not' => FALSE,
-        ),
         3 => array(
           'name' => 'role',
           'settings' => array(
@@ -1054,12 +1013,20 @@ return TRUE;
           'context' => 'argument_uid_1',
           'not' => FALSE,
         ),
+        4 => array(
+          'name' => 'context_exists',
+          'settings' => array(
+            'exists' => '0',
+          ),
+          'context' => 'relationship_profile2_from_user_1',
+          'not' => FALSE,
+        ),
       ),
     );
     $pane->configuration = array(
-      'admin_title' => 'Create your Boondocking Availiability Profile',
-      'title' => '<a href="/user/%logged_in_user:uid/edit/boondocking_available">Create your Boondocking Availiability Profile</a>',
-      'body' => '<div style="text-transform:capitalize; display:inline">%logged_in_user:name</div>, you have not yet added information about boondocking that you have available for other users. <a href="/user/%logged_in_user:uid/edit/boondocking_available">Add your boondocking availability information</a> now!',
+      'admin_title' => 'Add a Valid Boondocking Location',
+      'title' => '<a href="/user/%logged_in_user:uid/edit/boondocking_available">Add a Valid Boondocking Location</a>',
+      'body' => '<div style="text-transform:capitalize; display:inline">%logged_in_user:name</div>, you have not yet entered information about a valid boondocking location that you have available for other users. <a href="/user/%logged_in_user:uid/edit/boondocking_available">Add your boondocking availability information</a> now!',
       'format' => '3',
       'substitute' => 1,
     );
@@ -1135,17 +1102,6 @@ return TRUE;
     $pane->shown = TRUE;
     $pane->access = array(
       'plugins' => array(
-        0 => array(
-          'name' => 'php',
-          'settings' => array(
-            'description' => 'User has explicitly disabled BDA',
-            'php' => 'if (!empty($contexts[\'relationship_profile2_from_user_1\']->data->field_ba_bda_pref))
-{
-   return $contexts[\'relationship_profile2_from_user_1\']->data->field_ba_bda_pref[\'und\'][0][\'value\'];
-}',
-          ),
-          'not' => FALSE,
-        ),
         1 => array(
           'name' => 'context_exists',
           'settings' => array(
@@ -1174,6 +1130,21 @@ return TRUE;
             ),
           ),
           'context' => 'argument_uid_1',
+          'not' => FALSE,
+        ),
+        4 => array(
+          'name' => 'entity_field_value:profile2:boondocking_available:field_ba_bda_pref',
+          'settings' => array(
+            'field_ba_bda_pref' => array(
+              'und' => array(
+                0 => array(
+                  'value' => '1',
+                ),
+              ),
+            ),
+            'field_ba_bda_pref_value' => '1',
+          ),
+          'context' => 'relationship_profile2_from_user_1',
           'not' => FALSE,
         ),
       ),
@@ -1402,22 +1373,34 @@ return TRUE;
     $pane->pid = 'new-22';
     $pane->panel = 'left';
     $pane->type = 'block';
-    $pane->subtype = 'uc_expiry-0';
+    $pane->subtype = 'uc_expiry-uc_expiry';
     $pane->shown = TRUE;
     $pane->access = array(
       'plugins' => array(
-        0 => array(
+        1 => array(
+          'name' => 'role',
+          'settings' => array(
+            'rids' => array(
+              0 => 6,
+              1 => 17,
+            ),
+          ),
+          'context' => 'logged-in-user',
+          'not' => FALSE,
+        ),
+        2 => array(
           'name' => 'compare_users',
           'settings' => array(
             'equality' => '1',
           ),
           'context' => array(
-            0 => 'argument_uid_1',
-            1 => 'context_user_1',
+            0 => 'argument_entity_id:user_1',
+            1 => 'logged-in-user',
           ),
           'not' => FALSE,
         ),
       ),
+      'logic' => 'or',
     );
     $pane->configuration = array(
       'override_title' => 1,
@@ -1430,33 +1413,32 @@ return TRUE;
     $pane->css = array();
     $pane->extras = array();
     $pane->position = 4;
-    $pane->locks = '';
+    $pane->locks = array();
     $display->content['new-22'] = $pane;
     $display->panels['left'][4] = 'new-22';
     $pane = new stdClass();
     $pane->pid = 'new-23';
-    $pane->panel = 'right';
-    $pane->type = 'block';
-    $pane->subtype = 'adsense_managed-0';
+    $pane->panel = 'left';
+    $pane->type = 'entity_field_extra';
+    $pane->subtype = 'user:privatemsg_send_new_message';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
-      'override_title' => 0,
-      'override_title_text' => '',
+      'view_mode' => 'full',
+      'context' => 'argument_entity_id:user_1',
+      'override_title' => 1,
+      'override_title_text' => 'Contact %user - new.',
     );
     $pane->cache = array();
     $pane->style = array(
       'settings' => NULL,
     );
-    $pane->css = array(
-      'css_id' => 'adsense-block',
-      'css_class' => '',
-    );
+    $pane->css = array();
     $pane->extras = array();
-    $pane->position = 0;
-    $pane->locks = '';
+    $pane->position = 5;
+    $pane->locks = array();
     $display->content['new-23'] = $pane;
-    $display->panels['right'][0] = 'new-23';
+    $display->panels['left'][5] = 'new-23';
     $pane = new stdClass();
     $pane->pid = 'new-24';
     $pane->panel = 'right';
@@ -1502,10 +1484,10 @@ return TRUE;
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 1;
+    $pane->position = 0;
     $pane->locks = '';
     $display->content['new-24'] = $pane;
-    $display->panels['right'][1] = 'new-24';
+    $display->panels['right'][0] = 'new-24';
   $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
@@ -1793,26 +1775,11 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $pane = new stdClass();
     $pane->pid = 'new-1';
     $pane->panel = 'middle';
-    $pane->type = 'views';
-    $pane->subtype = 'showAllUsers';
+    $pane->type = 'views_panes';
+    $pane->subtype = 'all_users_map-panel_pane_1';
     $pane->shown = TRUE;
     $pane->access = array();
-    $pane->configuration = array(
-      'override_pager_settings' => 0,
-      'use_pager' => 0,
-      'nodes_per_page' => '0',
-      'pager_id' => '0',
-      'offset' => '0',
-      'more_link' => 0,
-      'feed_icons' => 0,
-      'panel_args' => 0,
-      'link_to_view' => 0,
-      'args' => '',
-      'url' => '',
-      'display' => 'page_1',
-      'override_title' => 0,
-      'override_title_text' => '',
-    );
+    $pane->configuration = array();
     $pane->cache = array();
     $pane->style = array(
       'settings' => NULL,
@@ -1820,7 +1787,7 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $pane->css = array();
     $pane->extras = array();
     $pane->position = 0;
-    $pane->locks = '';
+    $pane->locks = array();
     $display->content['new-1'] = $pane;
     $display->panels['middle'][0] = 'new-1';
   $display->hide_title = PANELS_TITLE_FIXED;
@@ -2009,16 +1976,19 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $pane = new stdClass();
     $pane->pid = 'new-6';
     $pane->panel = 'middle';
-    $pane->type = 'custom';
-    $pane->subtype = 'custom';
-    $pane->shown = FALSE;
+    $pane->type = 'node';
+    $pane->subtype = 'node';
+    $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
-      'admin_title' => 'Site Maintenance Warning',
-      'title' => 'Planned Site Maintenance',
-      'body' => 'Boondockers Welcome will undergo routine maintenance this evening, August 24th, starting at 9pm EDT. We expect to be back up by 12am EDT at the latest. During this time the site will be unavailable. We apologize in advance for any inconvenience this may cause.',
-      'format' => '1',
-      'substitute' => TRUE,
+      'nid' => '5966',
+      'links' => 0,
+      'leave_node_title' => 0,
+      'identifier' => '',
+      'build_mode' => 'full',
+      'link_node_title' => 0,
+      'override_title' => 1,
+      'override_title_text' => '',
     );
     $pane->cache = array();
     $pane->style = array(
@@ -2027,17 +1997,22 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $pane->css = array();
     $pane->extras = array();
     $pane->position = 0;
-    $pane->locks = '';
+    $pane->locks = array();
     $display->content['new-6'] = $pane;
     $display->panels['middle'][0] = 'new-6';
     $pane = new stdClass();
     $pane->pid = 'new-7';
     $pane->panel = 'middle';
-    $pane->type = 'panels_mini';
-    $pane->subtype = 'bda_map_panel';
+    $pane->type = 'node';
+    $pane->subtype = 'node';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
+      'nid' => '12',
+      'teaser' => 0,
+      'links' => 0,
+      'leave_node_title' => 0,
+      'identifier' => '',
       'override_title' => 0,
       'override_title_text' => '',
     );
@@ -2059,7 +2034,7 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
-      'nid' => '12',
+      'nid' => '72',
       'teaser' => 0,
       'links' => 0,
       'leave_node_title' => 0,
@@ -2079,32 +2054,6 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $display->panels['middle'][2] = 'new-8';
     $pane = new stdClass();
     $pane->pid = 'new-9';
-    $pane->panel = 'middle';
-    $pane->type = 'node';
-    $pane->subtype = 'node';
-    $pane->shown = TRUE;
-    $pane->access = array();
-    $pane->configuration = array(
-      'nid' => '72',
-      'teaser' => 0,
-      'links' => 0,
-      'leave_node_title' => 0,
-      'identifier' => '',
-      'override_title' => 0,
-      'override_title_text' => '',
-    );
-    $pane->cache = array();
-    $pane->style = array(
-      'settings' => NULL,
-    );
-    $pane->css = array();
-    $pane->extras = array();
-    $pane->position = 3;
-    $pane->locks = '';
-    $display->content['new-9'] = $pane;
-    $display->panels['middle'][3] = 'new-9';
-    $pane = new stdClass();
-    $pane->pid = 'new-10';
     $pane->panel = 'right';
     $pane->type = 'block';
     $pane->subtype = 'fb_likebox-0';
@@ -2122,10 +2071,10 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = '';
-    $display->content['new-10'] = $pane;
-    $display->panels['right'][0] = 'new-10';
+    $display->content['new-9'] = $pane;
+    $display->panels['right'][0] = 'new-9';
     $pane = new stdClass();
-    $pane->pid = 'new-11';
+    $pane->pid = 'new-10';
     $pane->panel = 'right';
     $pane->type = 'custom';
     $pane->subtype = 'custom';
@@ -2146,10 +2095,10 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 1;
     $pane->locks = '';
-    $display->content['new-11'] = $pane;
-    $display->panels['right'][1] = 'new-11';
+    $display->content['new-10'] = $pane;
+    $display->panels['right'][1] = 'new-10';
     $pane = new stdClass();
-    $pane->pid = 'new-12';
+    $pane->pid = 'new-11';
     $pane->panel = 'right';
     $pane->type = 'custom';
     $pane->subtype = 'custom';
@@ -2177,10 +2126,10 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 2;
     $pane->locks = '';
-    $display->content['new-12'] = $pane;
-    $display->panels['right'][2] = 'new-12';
+    $display->content['new-11'] = $pane;
+    $display->panels['right'][2] = 'new-11';
     $pane = new stdClass();
-    $pane->pid = 'new-13';
+    $pane->pid = 'new-12';
     $pane->panel = 'right';
     $pane->type = 'custom';
     $pane->subtype = 'custom';
@@ -2204,8 +2153,8 @@ function bdw_views_and_pages_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 3;
     $pane->locks = '';
-    $display->content['new-13'] = $pane;
-    $display->panels['right'][3] = 'new-13';
+    $display->content['new-12'] = $pane;
+    $display->panels['right'][3] = 'new-12';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
@@ -2295,7 +2244,7 @@ return ($user->name != "anonTester");',
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();
-    $pane->pid = 'new-14';
+    $pane->pid = 'new-13';
     $pane->panel = 'left';
     $pane->type = 'block';
     $pane->subtype = 'system-navigation';
@@ -2313,10 +2262,10 @@ return ($user->name != "anonTester");',
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $display->content['new-14'] = $pane;
-    $display->panels['left'][0] = 'new-14';
+    $display->content['new-13'] = $pane;
+    $display->panels['left'][0] = 'new-13';
     $pane = new stdClass();
-    $pane->pid = 'new-15';
+    $pane->pid = 'new-14';
     $pane->panel = 'left';
     $pane->type = 'custom';
     $pane->subtype = 'custom';
@@ -2355,10 +2304,10 @@ return _pm_email_notify_user_level($user->uid);
     $pane->extras = array();
     $pane->position = 1;
     $pane->locks = '';
-    $display->content['new-15'] = $pane;
-    $display->panels['left'][1] = 'new-15';
+    $display->content['new-14'] = $pane;
+    $display->panels['left'][1] = 'new-14';
     $pane = new stdClass();
-    $pane->pid = 'new-16';
+    $pane->pid = 'new-15';
     $pane->panel = 'left';
     $pane->type = 'panels_mini';
     $pane->subtype = 'messages';
@@ -2389,10 +2338,10 @@ return _pm_email_notify_user_level($user->uid);
     $pane->extras = array();
     $pane->position = 2;
     $pane->locks = '';
-    $display->content['new-16'] = $pane;
-    $display->panels['left'][2] = 'new-16';
+    $display->content['new-15'] = $pane;
+    $display->panels['left'][2] = 'new-15';
     $pane = new stdClass();
-    $pane->pid = 'new-17';
+    $pane->pid = 'new-16';
     $pane->panel = 'left';
     $pane->type = 'block';
     $pane->subtype = 'google_cse-0';
@@ -2410,10 +2359,10 @@ return _pm_email_notify_user_level($user->uid);
     $pane->extras = array();
     $pane->position = 3;
     $pane->locks = '';
-    $display->content['new-17'] = $pane;
-    $display->panels['left'][3] = 'new-17';
+    $display->content['new-16'] = $pane;
+    $display->panels['left'][3] = 'new-16';
     $pane = new stdClass();
-    $pane->pid = 'new-18';
+    $pane->pid = 'new-17';
     $pane->panel = 'left';
     $pane->type = 'block';
     $pane->subtype = 'addthis-0';
@@ -2431,10 +2380,10 @@ return _pm_email_notify_user_level($user->uid);
     $pane->extras = array();
     $pane->position = 4;
     $pane->locks = '';
-    $display->content['new-18'] = $pane;
-    $display->panels['left'][4] = 'new-18';
+    $display->content['new-17'] = $pane;
+    $display->panels['left'][4] = 'new-17';
     $pane = new stdClass();
-    $pane->pid = 'new-19';
+    $pane->pid = 'new-18';
     $pane->panel = 'left';
     $pane->type = 'views';
     $pane->subtype = 'bda_loc_block';
@@ -2464,10 +2413,10 @@ return _pm_email_notify_user_level($user->uid);
     $pane->extras = array();
     $pane->position = 5;
     $pane->locks = array();
-    $display->content['new-19'] = $pane;
-    $display->panels['left'][5] = 'new-19';
+    $display->content['new-18'] = $pane;
+    $display->panels['left'][5] = 'new-18';
     $pane = new stdClass();
-    $pane->pid = 'new-20';
+    $pane->pid = 'new-19';
     $pane->panel = 'middle';
     $pane->type = 'custom';
     $pane->subtype = 'custom';
@@ -2501,10 +2450,10 @@ return _pm_email_notify_user_level($user->uid);
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = '';
-    $display->content['new-20'] = $pane;
-    $display->panels['middle'][0] = 'new-20';
+    $display->content['new-19'] = $pane;
+    $display->panels['middle'][0] = 'new-19';
     $pane = new stdClass();
-    $pane->pid = 'new-21';
+    $pane->pid = 'new-20';
     $pane->panel = 'middle';
     $pane->type = 'node';
     $pane->subtype = 'node';
@@ -2540,10 +2489,10 @@ return _pm_email_notify_user_level($user->uid);
     $pane->extras = array();
     $pane->position = 1;
     $pane->locks = '';
-    $display->content['new-21'] = $pane;
-    $display->panels['middle'][1] = 'new-21';
+    $display->content['new-20'] = $pane;
+    $display->panels['middle'][1] = 'new-20';
     $pane = new stdClass();
-    $pane->pid = 'new-22';
+    $pane->pid = 'new-21';
     $pane->panel = 'middle';
     $pane->type = 'custom';
     $pane->subtype = 'custom';
@@ -2600,10 +2549,10 @@ return BDW_custom_changes_FileHasBeenDownloaded(\'NewMexicoFrugalShunpiker.pdf\'
     $pane->extras = array();
     $pane->position = 2;
     $pane->locks = '';
-    $display->content['new-22'] = $pane;
-    $display->panels['middle'][2] = 'new-22';
+    $display->content['new-21'] = $pane;
+    $display->panels['middle'][2] = 'new-21';
     $pane = new stdClass();
-    $pane->pid = 'new-23';
+    $pane->pid = 'new-22';
     $pane->panel = 'middle';
     $pane->type = 'custom';
     $pane->subtype = 'custom';
@@ -2647,31 +2596,16 @@ return BDW_custom_changes_FileHasBeenDownloaded(\'NewMexicoFrugalShunpiker.pdf\'
     $pane->extras = array();
     $pane->position = 3;
     $pane->locks = '';
-    $display->content['new-23'] = $pane;
-    $display->panels['middle'][3] = 'new-23';
+    $display->content['new-22'] = $pane;
+    $display->panels['middle'][3] = 'new-22';
     $pane = new stdClass();
-    $pane->pid = 'new-24';
+    $pane->pid = 'new-23';
     $pane->panel = 'middle';
     $pane->type = 'custom';
     $pane->subtype = 'custom';
     $pane->shown = TRUE;
     $pane->access = array(
       'plugins' => array(
-        1 => array(
-          'name' => 'php',
-          'settings' => array(
-            'description' => 'User not flagged as boondocking available',
-            'php' => '//dd($contexts, \'contexts\');
-global $user;
-$flag=flag_get_flag(\'boondocking_available\');
-$has_bda = $flag->is_flagged($user->uid);
-$no_bda_explicit=$contexts[\'relationship_profile2_from_user_2\']->data->field_ba_bda_pref[\'und\'][0][\'value\'];
-$condition = (!$no_bda_explicit && !$has_bda);
-return $condition;
-',
-          ),
-          'not' => FALSE,
-        ),
         2 => array(
           'name' => 'role',
           'settings' => array(
@@ -2681,6 +2615,14 @@ return $condition;
             ),
           ),
           'context' => 'context_user_1',
+          'not' => FALSE,
+        ),
+        4 => array(
+          'name' => 'context_exists',
+          'settings' => array(
+            'exists' => '0',
+          ),
+          'context' => 'relationship_profile2_from_user_2',
           'not' => FALSE,
         ),
       ),
@@ -2701,24 +2643,16 @@ return $condition;
     $pane->extras = array();
     $pane->position = 4;
     $pane->locks = '';
-    $display->content['new-24'] = $pane;
-    $display->panels['middle'][4] = 'new-24';
+    $display->content['new-23'] = $pane;
+    $display->panels['middle'][4] = 'new-23';
     $pane = new stdClass();
-    $pane->pid = 'new-25';
+    $pane->pid = 'new-24';
     $pane->panel = 'middle';
     $pane->type = 'custom';
     $pane->subtype = 'custom';
     $pane->shown = TRUE;
     $pane->access = array(
       'plugins' => array(
-        0 => array(
-          'name' => 'php',
-          'settings' => array(
-            'description' => 'BDA preference is set to explicitly disable BDA',
-            'php' => 'return $contexts[\'relationship_profile2_from_user_2\']->data->field_ba_bda_pref[\'und\'][0][\'value\'];',
-          ),
-          'not' => FALSE,
-        ),
         1 => array(
           'name' => 'context_exists',
           'settings' => array(
@@ -2735,6 +2669,21 @@ return $condition;
             ),
           ),
           'context' => 'context_user_1',
+          'not' => FALSE,
+        ),
+        3 => array(
+          'name' => 'entity_field_value:profile2:boondocking_available:field_ba_bda_pref',
+          'settings' => array(
+            'field_ba_bda_pref' => array(
+              'und' => array(
+                0 => array(
+                  'value' => '1',
+                ),
+              ),
+            ),
+            'field_ba_bda_pref_value' => '1',
+          ),
+          'context' => 'relationship_profile2_from_user_2',
           'not' => FALSE,
         ),
       ),
@@ -2756,10 +2705,10 @@ return $condition;
     $pane->extras = array();
     $pane->position = 5;
     $pane->locks = '';
-    $display->content['new-25'] = $pane;
-    $display->panels['middle'][5] = 'new-25';
+    $display->content['new-24'] = $pane;
+    $display->panels['middle'][5] = 'new-24';
     $pane = new stdClass();
-    $pane->pid = 'new-26';
+    $pane->pid = 'new-25';
     $pane->panel = 'middle';
     $pane->type = 'node';
     $pane->subtype = 'node';
@@ -2782,8 +2731,41 @@ return $condition;
     $pane->extras = array();
     $pane->position = 6;
     $pane->locks = '';
+    $display->content['new-25'] = $pane;
+    $display->panels['middle'][6] = 'new-25';
+    $pane = new stdClass();
+    $pane->pid = 'new-26';
+    $pane->panel = 'right';
+    $pane->type = 'custom';
+    $pane->subtype = 'custom';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array(
+      'admin_title' => 'Invite Others',
+      'title' => 'Invite Others <br>Earn Rewards',
+      'body' => 'Invite others to join Boondockers Welcome. 
+
+If they register, you both get an extra month of membership free! 
+
+<a href=\'/user/%user:uid/invites/new\'> Invite friends via email.</a>
+
+- Or -
+
+Use this URL on your blog or in your emails:
+<a href="%user:referral-link">%user:referral-link</a>',
+      'format' => '1',
+      'substitute' => 1,
+    );
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => NULL,
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 0;
+    $pane->locks = array();
     $display->content['new-26'] = $pane;
-    $display->panels['middle'][6] = 'new-26';
+    $display->panels['right'][0] = 'new-26';
     $pane = new stdClass();
     $pane->pid = 'new-27';
     $pane->panel = 'right';
@@ -2801,10 +2783,10 @@ return $condition;
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 0;
+    $pane->position = 1;
     $pane->locks = '';
     $display->content['new-27'] = $pane;
-    $display->panels['right'][0] = 'new-27';
+    $display->panels['right'][1] = 'new-27';
     $pane = new stdClass();
     $pane->pid = 'new-28';
     $pane->panel = 'right';
@@ -2825,10 +2807,10 @@ return $condition;
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 1;
+    $pane->position = 2;
     $pane->locks = '';
     $display->content['new-28'] = $pane;
-    $display->panels['right'][1] = 'new-28';
+    $display->panels['right'][2] = 'new-28';
     $pane = new stdClass();
     $pane->pid = 'new-29';
     $pane->panel = 'right';
@@ -2860,10 +2842,10 @@ return $condition;
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 2;
+    $pane->position = 3;
     $pane->locks = '';
     $display->content['new-29'] = $pane;
-    $display->panels['right'][2] = 'new-29';
+    $display->panels['right'][3] = 'new-29';
     $pane = new stdClass();
     $pane->pid = 'new-30';
     $pane->panel = 'right';
@@ -2878,10 +2860,10 @@ return $condition;
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 3;
+    $pane->position = 4;
     $pane->locks = '';
     $display->content['new-30'] = $pane;
-    $display->panels['right'][3] = 'new-30';
+    $display->panels['right'][4] = 'new-30';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;

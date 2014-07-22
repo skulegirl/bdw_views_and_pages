@@ -200,16 +200,23 @@ $view = views_get_current_view();
   $handler->display->display_options['style_plugin'] = 'gmap';
   $handler->display->display_options['style_options']['macro'] = '[gmap height=600px | width=100%]';
   $handler->display->display_options['style_options']['markertype'] = 'small red';
-  $handler->display->display_options['style_options']['latfield'] = 'pid';
-  $handler->display->display_options['style_options']['lonfield'] = 'pid';
-  $handler->display->display_options['style_options']['markerfield'] = 'pid';
-  $handler->display->display_options['style_options']['geofield'] = 'pid';
+  $handler->display->display_options['style_options']['latfield'] = 'name';
+  $handler->display->display_options['style_options']['lonfield'] = 'name';
+  $handler->display->display_options['style_options']['markerfield'] = 'name';
+  $handler->display->display_options['style_options']['geofield'] = 'name';
   $handler->display->display_options['style_options']['enablermt'] = 0;
-  $handler->display->display_options['style_options']['rmtfield'] = 'pid';
+  $handler->display->display_options['style_options']['rmtfield'] = 'name';
   $handler->display->display_options['style_options']['animation'] = '0';
-  $handler->display->display_options['style_options']['tooltipfield'] = 'pid';
-  $handler->display->display_options['style_options']['bubbletextfield'] = 'pid';
+  $handler->display->display_options['style_options']['tooltipfield'] = 'name';
+  $handler->display->display_options['style_options']['bubbletextenabled'] = 1;
+  $handler->display->display_options['style_options']['bubbletextfield'] = 'name';
   $handler->display->display_options['row_plugin'] = 'fields';
+  /* Header: Global: Text area */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['content'] = 'Use this map to browse all the locations that our members have available for you to boondock. Click on a marker to see the name of the member and link to their profile. Double click on an unmarked area to zoom in.';
+  $handler->display->display_options['header']['area']['format'] = '1';
   /* Relationship: Field: Your Location (field_boondock_location) */
   $handler->display->display_options['relationships']['field_boondock_location_lid']['id'] = 'field_boondock_location_lid';
   $handler->display->display_options['relationships']['field_boondock_location_lid']['table'] = 'field_data_field_boondock_location';
@@ -240,10 +247,28 @@ $view = views_get_current_view();
   $handler->display->display_options['filters']['type']['value'] = array(
     'boondocking_available' => 'boondocking_available',
   );
+  /* Filter criterion: Profile: Do you have a boondocking location available on your property? (field_ba_bda_pref) */
+  $handler->display->display_options['filters']['field_ba_bda_pref_value']['id'] = 'field_ba_bda_pref_value';
+  $handler->display->display_options['filters']['field_ba_bda_pref_value']['table'] = 'field_data_field_ba_bda_pref';
+  $handler->display->display_options['filters']['field_ba_bda_pref_value']['field'] = 'field_ba_bda_pref_value';
+  $handler->display->display_options['filters']['field_ba_bda_pref_value']['value'] = array(
+    0 => '0',
+  );
+  /* Filter criterion: User: Roles */
+  $handler->display->display_options['filters']['rid']['id'] = 'rid';
+  $handler->display->display_options['filters']['rid']['table'] = 'users_roles';
+  $handler->display->display_options['filters']['rid']['field'] = 'rid';
+  $handler->display->display_options['filters']['rid']['relationship'] = 'user';
+  $handler->display->display_options['filters']['rid']['value'] = array(
+    8 => '8',
+  );
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['path'] = 'showAllUsersMap';
+
+  /* Display: Content pane */
+  $handler = $view->new_display('panel_pane', 'Content pane', 'panel_pane_1');
   $export['all_users_map'] = $view;
 
   $view = new view();
@@ -550,7 +575,7 @@ $view = views_get_current_view();
   $handler->display->display_options['filters']['type']['value'] = array(
     'boondocking_available' => 'boondocking_available',
   );
-  /* Filter criterion: Field: Do you have a boondocking location available on your property? (field_ba_bda_pref) */
+  /* Filter criterion: Profile: Do you have a boondocking location available on your property? (field_ba_bda_pref) */
   $handler->display->display_options['filters']['field_ba_bda_pref_value']['id'] = 'field_ba_bda_pref_value';
   $handler->display->display_options['filters']['field_ba_bda_pref_value']['table'] = 'field_data_field_ba_bda_pref';
   $handler->display->display_options['filters']['field_ba_bda_pref_value']['field'] = 'field_ba_bda_pref_value';
@@ -712,10 +737,12 @@ $view = views_get_current_view();
   $handler->display->display_options['fields']['field_user_your_rig_photo']['label'] = '';
   $handler->display->display_options['fields']['field_user_your_rig_photo']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_user_your_rig_photo']['click_sort_column'] = 'fid';
-  $handler->display->display_options['fields']['field_user_your_rig_photo']['type'] = 'lightbox2__lightbox__medium__original';
+  $handler->display->display_options['fields']['field_user_your_rig_photo']['type'] = 'lightbox2';
   $handler->display->display_options['fields']['field_user_your_rig_photo']['settings'] = array(
+    'type' => 'lightbox',
     'image_style' => 'medium',
-    'image_link' => 'file',
+    'lightbox_style' => '0',
+    'caption' => 'hidden',
   );
   /* Field: Field: Your Rig */
   $handler->display->display_options['fields']['field_user_your_rig']['id'] = 'field_user_your_rig';
@@ -984,7 +1011,7 @@ Otherwise, try <a href="javascript:javascript:history.go(-1)">going back</a> and
 
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'SearchLocationResults';
+  $handler->display->display_options['css_class'] = 'search-results';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
@@ -1186,6 +1213,13 @@ print $string;
   $handler->display->display_options['defaults']['row_plugin'] = FALSE;
   $handler->display->display_options['row_plugin'] = 'fields';
   $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['header'] = FALSE;
+  /* Header: Global: Text area */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['content'] = 'Click on a marker to see the name of the member and link to their profile. Double click on an unmarked area to zoom in.';
+  $handler->display->display_options['header']['area']['format'] = '1';
   $handler->display->display_options['path'] = 'searchlocationresults';
 
   /* Display: Search Map Attachment */
@@ -1206,11 +1240,20 @@ print $string;
   $handler->display->display_options['style_options']['highlight_nodearg_arg'] = 'distance';
   $handler->display->display_options['style_options']['autoclick_on_nodearg_arg'] = 'distance';
   $handler->display->display_options['style_options']['tooltipfield'] = 'name';
+  $handler->display->display_options['style_options']['bubbletextenabled'] = 1;
   $handler->display->display_options['style_options']['bubbletextfield'] = 'name';
   $handler->display->display_options['defaults']['style_options'] = FALSE;
   $handler->display->display_options['defaults']['row_plugin'] = FALSE;
   $handler->display->display_options['row_plugin'] = 'fields';
   $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['fields'] = FALSE;
+  /* Field: User: Name */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['relationship'] = 'user';
+  $handler->display->display_options['fields']['name']['label'] = '';
+  $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
   $handler->display->display_options['displays'] = array(
     'page' => 'page',
     'default' => 0,
@@ -1378,12 +1421,17 @@ print $string;
   $handler->display->display_options['fields']['field_ba_photo']['table'] = 'field_data_field_ba_photo';
   $handler->display->display_options['fields']['field_ba_photo']['field'] = 'field_ba_photo';
   $handler->display->display_options['fields']['field_ba_photo']['label'] = '';
+  $handler->display->display_options['fields']['field_ba_photo']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_ba_photo']['alter']['text'] = '[field_ba_photo]
+<br>[field_ba_photo-title]<br>';
   $handler->display->display_options['fields']['field_ba_photo']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_ba_photo']['click_sort_column'] = 'fid';
-  $handler->display->display_options['fields']['field_ba_photo']['type'] = 'lightbox2__lightbox__medium__original';
+  $handler->display->display_options['fields']['field_ba_photo']['type'] = 'lightbox2';
   $handler->display->display_options['fields']['field_ba_photo']['settings'] = array(
+    'type' => 'lightbox',
     'image_style' => 'medium',
-    'image_link' => 'file',
+    'lightbox_style' => '0',
+    'caption' => 'title',
   );
   $handler->display->display_options['fields']['field_ba_photo']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['field_ba_photo']['delta_offset'] = '0';
@@ -1456,7 +1504,6 @@ print $string;
   $handler->display->display_options['style_options']['widgets']['top']['views_slideshow_pager']['type'] = 'views_slideshow_pager_fields';
   $handler->display->display_options['style_options']['widgets']['top']['views_slideshow_pager']['views_slideshow_pager_fields_fields'] = array(
     'field_user_your_photos' => 0,
-    'field_user_your_photos_1' => 0,
   );
   $handler->display->display_options['style_options']['widgets']['top']['views_slideshow_controls']['enable'] = 1;
   $handler->display->display_options['style_options']['widgets']['top']['views_slideshow_controls']['weight'] = '1';
@@ -1467,7 +1514,6 @@ print $string;
   $handler->display->display_options['style_options']['widgets']['bottom']['views_slideshow_pager']['type'] = 'views_slideshow_pager_fields';
   $handler->display->display_options['style_options']['widgets']['bottom']['views_slideshow_pager']['views_slideshow_pager_fields_fields'] = array(
     'field_user_your_photos' => 0,
-    'field_user_your_photos_1' => 0,
   );
   $handler->display->display_options['style_options']['widgets']['bottom']['views_slideshow_controls']['weight'] = '1';
   $handler->display->display_options['style_options']['widgets']['bottom']['views_slideshow_controls']['type'] = 'views_slideshow_controls_text';
@@ -1483,20 +1529,30 @@ print $string;
   $handler->display->display_options['style_options']['views_slideshow_cycle']['cleartype'] = 0;
   $handler->display->display_options['style_options']['views_slideshow_cycle']['cleartypenobg'] = 0;
   $handler->display->display_options['row_plugin'] = 'fields';
+  $handler->display->display_options['row_options']['inline'] = array(
+    'field_user_your_photos' => 'field_user_your_photos',
+  );
   /* Field: Field: Your Photos */
   $handler->display->display_options['fields']['field_user_your_photos']['id'] = 'field_user_your_photos';
   $handler->display->display_options['fields']['field_user_your_photos']['table'] = 'field_data_field_user_your_photos';
   $handler->display->display_options['fields']['field_user_your_photos']['field'] = 'field_user_your_photos';
   $handler->display->display_options['fields']['field_user_your_photos']['label'] = '';
+  $handler->display->display_options['fields']['field_user_your_photos']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_user_your_photos']['alter']['text'] = '[field_user_your_photos]
+<br>[field_user_your_photos-title]<br>
+';
   $handler->display->display_options['fields']['field_user_your_photos']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_user_your_photos']['click_sort_column'] = 'fid';
-  $handler->display->display_options['fields']['field_user_your_photos']['type'] = 'lightbox2__lightbox__medium__original';
+  $handler->display->display_options['fields']['field_user_your_photos']['type'] = 'lightbox2';
   $handler->display->display_options['fields']['field_user_your_photos']['settings'] = array(
+    'type' => 'lightbox',
     'image_style' => 'medium',
-    'image_link' => 'file',
+    'lightbox_style' => '0',
+    'caption' => 'title',
   );
   $handler->display->display_options['fields']['field_user_your_photos']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['field_user_your_photos']['delta_offset'] = '0';
+  $handler->display->display_options['fields']['field_user_your_photos']['multi_type'] = 'ol';
   /* Contextual filter: Profile: User uid */
   $handler->display->display_options['arguments']['user']['id'] = 'user';
   $handler->display->display_options['arguments']['user']['table'] = 'profile';
@@ -1573,10 +1629,12 @@ print $string;
   $handler->display->display_options['fields']['field_user_photo']['field'] = 'field_user_photo';
   $handler->display->display_options['fields']['field_user_photo']['relationship'] = 'profile';
   $handler->display->display_options['fields']['field_user_photo']['click_sort_column'] = 'fid';
-  $handler->display->display_options['fields']['field_user_photo']['type'] = 'lightbox2__lightbox__thumbnail__original';
+  $handler->display->display_options['fields']['field_user_photo']['type'] = 'lightbox2';
   $handler->display->display_options['fields']['field_user_photo']['settings'] = array(
+    'type' => 'lightbox',
     'image_style' => 'thumbnail',
-    'image_link' => '',
+    'lightbox_style' => '0',
+    'caption' => 'hidden',
   );
   /* Field: Field: Your Age Range */
   $handler->display->display_options['fields']['field_user_age_range']['id'] = 'field_user_age_range';
@@ -1644,7 +1702,7 @@ return TRUE;';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['style_plugin'] = 'default';
-  $handler->display->display_options['row_plugin'] = 'node';
+  $handler->display->display_options['row_plugin'] = 'fields';
   /* Header: Global: Text area */
   $handler->display->display_options['header']['area']['id'] = 'area';
   $handler->display->display_options['header']['area']['table'] = 'views';
@@ -1722,28 +1780,30 @@ return TRUE;';
   $handler->display->display_options['relationships']['uid']['id'] = 'uid';
   $handler->display->display_options['relationships']['uid']['table'] = 'node';
   $handler->display->display_options['relationships']['uid']['field'] = 'uid';
+  /* Field: Content: Title */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'node';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['label'] = '';
+  $handler->display->display_options['fields']['title']['element_type'] = 'h2';
+  $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
   /* Field: User: Name */
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'users';
   $handler->display->display_options['fields']['name']['field'] = 'name';
   $handler->display->display_options['fields']['name']['relationship'] = 'uid';
   $handler->display->display_options['fields']['name']['label'] = 'Recommended By';
-  /* Field: Content: Title */
-  $handler->display->display_options['fields']['title']['id'] = 'title';
-  $handler->display->display_options['fields']['title']['table'] = 'node';
-  $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['label'] = '';
-  /* Field: Broken/missing handler */
-  $handler->display->display_options['fields']['teaser']['id'] = 'teaser';
-  $handler->display->display_options['fields']['teaser']['table'] = 'node_revision';
-  $handler->display->display_options['fields']['teaser']['field'] = 'teaser';
-  $handler->display->display_options['fields']['teaser']['label'] = '';
-  /* Field: Content: Link */
-  $handler->display->display_options['fields']['view_node']['id'] = 'view_node';
-  $handler->display->display_options['fields']['view_node']['table'] = 'views_entity_node';
-  $handler->display->display_options['fields']['view_node']['field'] = 'view_node';
-  $handler->display->display_options['fields']['view_node']['label'] = '';
-  $handler->display->display_options['fields']['view_node']['text'] = 'more...';
+  $handler->display->display_options['fields']['name']['element_label_type'] = 'span';
+  $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
+  /* Field: Content: Body */
+  $handler->display->display_options['fields']['body']['id'] = 'body';
+  $handler->display->display_options['fields']['body']['table'] = 'field_data_body';
+  $handler->display->display_options['fields']['body']['field'] = 'body';
+  $handler->display->display_options['fields']['body']['label'] = '';
+  $handler->display->display_options['fields']['body']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['body']['settings'] = array(
+    'trim_length' => '200',
+  );
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
@@ -1768,6 +1828,36 @@ return TRUE;';
   );
   $handler->display->display_options['filters']['type']['group'] = '0';
   $handler->display->display_options['filters']['type']['expose']['operator'] = FALSE;
+  /* Filter criterion: Content: Author uid */
+  $handler->display->display_options['filters']['uid']['id'] = 'uid';
+  $handler->display->display_options['filters']['uid']['table'] = 'node';
+  $handler->display->display_options['filters']['uid']['field'] = 'uid';
+  $handler->display->display_options['filters']['uid']['operator'] = 'not in';
+  $handler->display->display_options['filters']['uid']['value'] = array(
+    0 => 0,
+  );
+  $handler->display->display_options['filters']['uid']['expose']['operator_id'] = 'uid_op';
+  $handler->display->display_options['filters']['uid']['expose']['label'] = 'Author uid';
+  $handler->display->display_options['filters']['uid']['expose']['operator'] = 'uid_op';
+  $handler->display->display_options['filters']['uid']['expose']['identifier'] = 'uid';
+  $handler->display->display_options['filters']['uid']['expose']['remember_roles'] = array(
+    2 => '2',
+    19 => 0,
+    11 => 0,
+    1 => 0,
+    7 => 0,
+    18 => 0,
+    16 => 0,
+    21 => 0,
+    3 => 0,
+    15 => 0,
+    8 => 0,
+    13 => 0,
+    20 => 0,
+    6 => 0,
+    10 => 0,
+    17 => 0,
+  );
 
   /* Display: User Recommendations Pane */
   $handler = $view->new_display('panel_pane', 'User Recommendations Pane', 'panel_pane_1');
@@ -1782,12 +1872,43 @@ return TRUE;';
   $handler->display->display_options['pager']['type'] = 'some';
   $handler->display->display_options['pager']['options']['items_per_page'] = '3';
   $handler->display->display_options['pager']['options']['offset'] = '0';
-  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
-  $handler->display->display_options['style_plugin'] = 'default';
-  $handler->display->display_options['defaults']['style_options'] = FALSE;
-  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
-  $handler->display->display_options['row_plugin'] = 'node';
-  $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['fields'] = FALSE;
+  /* Field: Content: Title */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'node';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['label'] = '';
+  $handler->display->display_options['fields']['title']['element_type'] = 'h2';
+  $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+  /* Field: User: Name */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['name']['label'] = 'Recommended By';
+  $handler->display->display_options['fields']['name']['element_label_type'] = 'span';
+  $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
+  /* Field: Content: Path */
+  $handler->display->display_options['fields']['path']['id'] = 'path';
+  $handler->display->display_options['fields']['path']['table'] = 'node';
+  $handler->display->display_options['fields']['path']['field'] = 'path';
+  $handler->display->display_options['fields']['path']['label'] = '';
+  $handler->display->display_options['fields']['path']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['path']['element_label_colon'] = FALSE;
+  /* Field: Content: Body */
+  $handler->display->display_options['fields']['body']['id'] = 'body';
+  $handler->display->display_options['fields']['body']['table'] = 'field_data_body';
+  $handler->display->display_options['fields']['body']['field'] = 'body';
+  $handler->display->display_options['fields']['body']['label'] = '';
+  $handler->display->display_options['fields']['body']['alter']['max_length'] = '200';
+  $handler->display->display_options['fields']['body']['alter']['more_link'] = TRUE;
+  $handler->display->display_options['fields']['body']['alter']['more_link_text'] = 'Read more';
+  $handler->display->display_options['fields']['body']['alter']['more_link_path'] = '[path]';
+  $handler->display->display_options['fields']['body']['alter']['trim'] = TRUE;
+  $handler->display->display_options['fields']['body']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['body']['settings'] = array(
+    'trim_length' => '200',
+  );
   $handler->display->display_options['allow']['use_pager'] = 0;
   $handler->display->display_options['allow']['items_per_page'] = 0;
   $handler->display->display_options['allow']['offset'] = 0;
@@ -1815,27 +1936,29 @@ return TRUE;';
   $export['user_recommendations'] = $view;
 
   $view = new view();
-  $view->name = 'view_users_with_filter';
-  $view->description = 'Allow admins to see users filtered by different criteria';
-  $view->tag = '';
+  $view->name = 'view_users_with_filter_d7';
+  $view->description = '';
+  $view->tag = 'default';
   $view->base_table = 'users';
-  $view->human_name = 'View users with filter';
-  $view->core = 6;
+  $view->human_name = 'View Users with Filter D7';
+  $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
 
-  /* Display: Defaults */
-  $handler = $view->new_display('default', 'Defaults', 'default');
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'View Users with Filter D7';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'role';
   $handler->display->display_options['access']['role'] = array(
-    6 => 6,
-    17 => 17,
+    6 => '6',
+    17 => '17',
   );
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['columns'] = array(
     'name' => 'name',
@@ -1843,6 +1966,8 @@ return TRUE;';
     'mail' => 'mail',
     'access' => 'access',
     'rid' => 'rid',
+    'status' => 'status',
+    'php' => 'php',
   );
   $handler->display->display_options['style_options']['default'] = 'created';
   $handler->display->display_options['style_options']['info'] = array(
@@ -1851,91 +1976,96 @@ return TRUE;';
       'default_sort_order' => 'asc',
       'align' => '',
       'separator' => '',
+      'empty_column' => 0,
     ),
     'created' => array(
       'sortable' => 1,
-      'default_sort_order' => 'asc',
+      'default_sort_order' => 'desc',
       'align' => '',
       'separator' => '',
+      'empty_column' => 0,
     ),
     'mail' => array(
       'sortable' => 1,
       'default_sort_order' => 'asc',
       'align' => '',
       'separator' => '',
+      'empty_column' => 0,
     ),
     'access' => array(
       'sortable' => 1,
-      'default_sort_order' => 'asc',
+      'default_sort_order' => 'desc',
       'align' => '',
       'separator' => '',
+      'empty_column' => 0,
     ),
     'rid' => array(
       'align' => '',
       'separator' => '',
+      'empty_column' => 0,
+    ),
+    'status' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'php' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
     ),
   );
-  $handler->display->display_options['style_options']['sticky'] = TRUE;
-  /* Header: Global: Text area */
-  $handler->display->display_options['header']['area']['id'] = 'area';
-  $handler->display->display_options['header']['area']['table'] = 'views';
-  $handler->display->display_options['header']['area']['field'] = 'area';
-  $handler->display->display_options['header']['area']['label'] = 'Text area';
-  $handler->display->display_options['header']['area']['content'] = '<h2><b>NOTE</b>: I recently added the filters for "has bda flagged" and "purchased membership flagged". These seem to always default to "TRUE" instead of "any", so you will need to change them manually for now.</h2>
-<h2>
+  /* Header: Global: PHP */
+  $handler->display->display_options['header']['php']['id'] = 'php';
+  $handler->display->display_options['header']['php']['table'] = 'views';
+  $handler->display->display_options['header']['php']['field'] = 'php';
+  $handler->display->display_options['header']['php']['label'] = 'Result count';
+  $handler->display->display_options['header']['php']['php_output'] = '<h2>
 <?php
   $view = views_get_current_view();
   print \'There are <b> \' . $view->total_rows . \'</b> users who fit this description\';
 ?>
-</h2>';
-  $handler->display->display_options['header']['area']['format'] = '3';
-  /* No results behavior: Global: Text area */
-  $handler->display->display_options['empty']['area']['id'] = 'area';
-  $handler->display->display_options['empty']['area']['table'] = 'views';
-  $handler->display->display_options['empty']['area']['field'] = 'area';
-  $handler->display->display_options['empty']['area']['label'] = 'Text area';
-  $handler->display->display_options['empty']['area']['content'] = '<h2><b>NOTE</b>: I recently added the filters for "has bda flagged" and "purchased membership flagged". These seem to always default to "TRUE" instead of "any", so you will need to change them manually for now. This is likely why you\'re not seeing any results here!</h2>';
-  $handler->display->display_options['empty']['area']['format'] = '2';
-  /* Relationship: Broken/missing handler */
-  $handler->display->display_options['relationships']['content_profile_rel']['id'] = 'content_profile_rel';
-  $handler->display->display_options['relationships']['content_profile_rel']['table'] = 'users';
-  $handler->display->display_options['relationships']['content_profile_rel']['field'] = 'content_profile_rel';
-  $handler->display->display_options['relationships']['content_profile_rel']['label'] = 'Content Profile - User Profile';
-  /* Relationship: Flags: boondocking_available */
+</h2>
+';
+  /* Relationship: Flags: membership_expiring */
   $handler->display->display_options['relationships']['flag_content_rel']['id'] = 'flag_content_rel';
   $handler->display->display_options['relationships']['flag_content_rel']['table'] = 'users';
   $handler->display->display_options['relationships']['flag_content_rel']['field'] = 'flag_content_rel';
-  $handler->display->display_options['relationships']['flag_content_rel']['ui_name'] = 'bda_flag';
-  $handler->display->display_options['relationships']['flag_content_rel']['label'] = 'Boondocking Available Flag';
+  $handler->display->display_options['relationships']['flag_content_rel']['label'] = 'Membership Expiring';
   $handler->display->display_options['relationships']['flag_content_rel']['required'] = 0;
-  $handler->display->display_options['relationships']['flag_content_rel']['flag'] = 'boondocking_available';
+  $handler->display->display_options['relationships']['flag_content_rel']['flag'] = 'membership_expiring';
   $handler->display->display_options['relationships']['flag_content_rel']['user_scope'] = 'any';
-  /* Relationship: Flags: purchased_membership */
+  /* Relationship: Flags: boondocking_available */
   $handler->display->display_options['relationships']['flag_content_rel_1']['id'] = 'flag_content_rel_1';
   $handler->display->display_options['relationships']['flag_content_rel_1']['table'] = 'users';
   $handler->display->display_options['relationships']['flag_content_rel_1']['field'] = 'flag_content_rel';
-  $handler->display->display_options['relationships']['flag_content_rel_1']['ui_name'] = 'purchased membership flag';
-  $handler->display->display_options['relationships']['flag_content_rel_1']['label'] = 'puchased membership flag';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['label'] = 'boondocking provided';
   $handler->display->display_options['relationships']['flag_content_rel_1']['required'] = 0;
-  $handler->display->display_options['relationships']['flag_content_rel_1']['flag'] = 'purchased_membership';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['flag'] = 'boondocking_available';
   $handler->display->display_options['relationships']['flag_content_rel_1']['user_scope'] = 'any';
-  /* Relationship: Flags: membership_expiring */
+  /* Relationship: Flags: purchased_membership */
   $handler->display->display_options['relationships']['flag_content_rel_2']['id'] = 'flag_content_rel_2';
   $handler->display->display_options['relationships']['flag_content_rel_2']['table'] = 'users';
   $handler->display->display_options['relationships']['flag_content_rel_2']['field'] = 'flag_content_rel';
-  $handler->display->display_options['relationships']['flag_content_rel_2']['ui_name'] = 'membership_expiring_flag';
-  $handler->display->display_options['relationships']['flag_content_rel_2']['label'] = 'Membership Expiring Flag';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['label'] = 'purchased membership';
   $handler->display->display_options['relationships']['flag_content_rel_2']['required'] = 0;
-  $handler->display->display_options['relationships']['flag_content_rel_2']['flag'] = 'membership_expiring';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['flag'] = 'purchased_membership';
   $handler->display->display_options['relationships']['flag_content_rel_2']['user_scope'] = 'any';
   /* Field: User: Name */
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'users';
   $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['alter']['word_boundary'] = FALSE;
+  $handler->display->display_options['fields']['name']['alter']['ellipsis'] = FALSE;
   /* Field: User: Created date */
   $handler->display->display_options['fields']['created']['id'] = 'created';
   $handler->display->display_options['fields']['created']['table'] = 'users';
   $handler->display->display_options['fields']['created']['field'] = 'created';
+  $handler->display->display_options['fields']['created']['date_format'] = 'short';
   /* Field: User: E-mail */
   $handler->display->display_options['fields']['mail']['id'] = 'mail';
   $handler->display->display_options['fields']['mail']['table'] = 'users';
@@ -1944,114 +2074,246 @@ return TRUE;';
   $handler->display->display_options['fields']['access']['id'] = 'access';
   $handler->display->display_options['fields']['access']['table'] = 'users';
   $handler->display->display_options['fields']['access']['field'] = 'access';
+  $handler->display->display_options['fields']['access']['date_format'] = 'short';
   /* Field: User: Roles */
   $handler->display->display_options['fields']['rid']['id'] = 'rid';
   $handler->display->display_options['fields']['rid']['table'] = 'users_roles';
   $handler->display->display_options['fields']['rid']['field'] = 'rid';
-  $handler->display->display_options['filter_groups']['groups'] = array(
-    1 => 'AND',
-    2 => 'AND',
+  /* Field: User: Active */
+  $handler->display->display_options['fields']['status']['id'] = 'status';
+  $handler->display->display_options['fields']['status']['table'] = 'users';
+  $handler->display->display_options['fields']['status']['field'] = 'status';
+  $handler->display->display_options['fields']['status']['type'] = 'active-blocked';
+  $handler->display->display_options['fields']['status']['not'] = 0;
+  /* Field: Global: PHP */
+  $handler->display->display_options['fields']['php']['id'] = 'php';
+  $handler->display->display_options['fields']['php']['table'] = 'views';
+  $handler->display->display_options['fields']['php']['field'] = 'php';
+  $handler->display->display_options['fields']['php']['label'] = 'Role Expiry';
+  $handler->display->display_options['fields']['php']['use_php_setup'] = 0;
+  $handler->display->display_options['fields']['php']['php_value'] = '      $expiration = db_query_range(\'select expiration from {uc_roles_expirations} where uid = :uid\', 0, 1, array(\':uid\' => $data->uid))->fetchField();
+      return $expiration;
+';
+  $handler->display->display_options['fields']['php']['php_output'] = '<?php
+     if ($value)
+     {
+       $output = date("F dS, Y", $value) . "  ";
+       echo $output;
+
+     }
+     else
+     {
+        echo "N/A";
+     }
+?>
+';
+  $handler->display->display_options['fields']['php']['use_php_click_sortable'] = '1';
+  $handler->display->display_options['fields']['php']['php_click_sortable'] = '';
+  /* Filter criterion: User: Active */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'users';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = '1';
+  $handler->display->display_options['filters']['status']['group'] = 1;
+  $handler->display->display_options['filters']['status']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['status']['expose']['operator_id'] = '';
+  $handler->display->display_options['filters']['status']['expose']['label'] = 'Active';
+  $handler->display->display_options['filters']['status']['expose']['operator'] = 'status_op';
+  $handler->display->display_options['filters']['status']['expose']['identifier'] = 'status';
+  $handler->display->display_options['filters']['status']['expose']['remember_roles'] = array(
+    2 => '2',
+    19 => 0,
+    11 => 0,
+    1 => 0,
+    7 => 0,
+    18 => 0,
+    16 => 0,
+    21 => 0,
+    3 => 0,
+    15 => 0,
+    8 => 0,
+    13 => 0,
+    20 => 0,
+    6 => 0,
+    10 => 0,
+    17 => 0,
   );
-  /* Filter criterion: User: Roles */
-  $handler->display->display_options['filters']['rid']['id'] = 'rid';
-  $handler->display->display_options['filters']['rid']['table'] = 'users_roles';
-  $handler->display->display_options['filters']['rid']['field'] = 'rid';
-  $handler->display->display_options['filters']['rid']['group'] = 1;
-  $handler->display->display_options['filters']['rid']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['rid']['expose']['operator_id'] = 'rid_op';
-  $handler->display->display_options['filters']['rid']['expose']['label'] = 'User: Roles';
-  $handler->display->display_options['filters']['rid']['expose']['use_operator'] = TRUE;
-  $handler->display->display_options['filters']['rid']['expose']['operator'] = 'rid_op';
-  $handler->display->display_options['filters']['rid']['expose']['identifier'] = 'rid';
   /* Filter criterion: User: E-mail */
   $handler->display->display_options['filters']['mail']['id'] = 'mail';
   $handler->display->display_options['filters']['mail']['table'] = 'users';
   $handler->display->display_options['filters']['mail']['field'] = 'mail';
-  $handler->display->display_options['filters']['mail']['group'] = 1;
+  $handler->display->display_options['filters']['mail']['operator'] = 'contains';
   $handler->display->display_options['filters']['mail']['exposed'] = TRUE;
   $handler->display->display_options['filters']['mail']['expose']['operator_id'] = 'mail_op';
-  $handler->display->display_options['filters']['mail']['expose']['label'] = 'User: E-mail';
+  $handler->display->display_options['filters']['mail']['expose']['label'] = 'E-mail';
   $handler->display->display_options['filters']['mail']['expose']['operator'] = 'mail_op';
   $handler->display->display_options['filters']['mail']['expose']['identifier'] = 'mail';
+  $handler->display->display_options['filters']['mail']['expose']['remember_roles'] = array(
+    2 => '2',
+    19 => 0,
+    11 => 0,
+    1 => 0,
+    7 => 0,
+    18 => 0,
+    16 => 0,
+    21 => 0,
+    3 => 0,
+    15 => 0,
+    8 => 0,
+    13 => 0,
+    20 => 0,
+    6 => 0,
+    10 => 0,
+    17 => 0,
+  );
   /* Filter criterion: User: Name */
   $handler->display->display_options['filters']['uid']['id'] = 'uid';
   $handler->display->display_options['filters']['uid']['table'] = 'users';
   $handler->display->display_options['filters']['uid']['field'] = 'uid';
   $handler->display->display_options['filters']['uid']['value'] = '';
-  $handler->display->display_options['filters']['uid']['group'] = 1;
   $handler->display->display_options['filters']['uid']['exposed'] = TRUE;
   $handler->display->display_options['filters']['uid']['expose']['operator_id'] = 'uid_op';
-  $handler->display->display_options['filters']['uid']['expose']['label'] = 'User: Name';
+  $handler->display->display_options['filters']['uid']['expose']['label'] = 'Name';
   $handler->display->display_options['filters']['uid']['expose']['operator'] = 'uid_op';
   $handler->display->display_options['filters']['uid']['expose']['identifier'] = 'uid';
-  /* Filter criterion: Content: Type */
-  $handler->display->display_options['filters']['type']['id'] = 'type';
-  $handler->display->display_options['filters']['type']['table'] = 'node';
-  $handler->display->display_options['filters']['type']['field'] = 'type';
-  $handler->display->display_options['filters']['type']['relationship'] = 'content_profile_rel';
-  $handler->display->display_options['filters']['type']['value'] = array(
-    'profile' => 'profile',
+  $handler->display->display_options['filters']['uid']['expose']['remember_roles'] = array(
+    2 => '2',
+    19 => 0,
+    11 => 0,
+    1 => 0,
+    7 => 0,
+    18 => 0,
+    16 => 0,
+    21 => 0,
+    3 => 0,
+    15 => 0,
+    8 => 0,
+    13 => 0,
+    20 => 0,
+    6 => 0,
+    10 => 0,
+    17 => 0,
   );
-  $handler->display->display_options['filters']['type']['group'] = 1;
-  $handler->display->display_options['filters']['type']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['type']['expose']['operator_id'] = 'type_op';
-  $handler->display->display_options['filters']['type']['expose']['label'] = 'Node: Type';
-  $handler->display->display_options['filters']['type']['expose']['operator'] = 'type_op';
-  $handler->display->display_options['filters']['type']['expose']['identifier'] = 'type';
-  $handler->display->display_options['filters']['type']['expose']['reduce'] = TRUE;
-  /* Filter criterion: User: Name */
-  $handler->display->display_options['filters']['uid_1']['id'] = 'uid_1';
-  $handler->display->display_options['filters']['uid_1']['table'] = 'users';
-  $handler->display->display_options['filters']['uid_1']['field'] = 'uid';
-  $handler->display->display_options['filters']['uid_1']['operator'] = 'not in';
-  $handler->display->display_options['filters']['uid_1']['value'] = array(
-    0 => 0,
+  /* Filter criterion: User: Roles */
+  $handler->display->display_options['filters']['rid']['id'] = 'rid';
+  $handler->display->display_options['filters']['rid']['table'] = 'users_roles';
+  $handler->display->display_options['filters']['rid']['field'] = 'rid';
+  $handler->display->display_options['filters']['rid']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['rid']['expose']['operator_id'] = 'rid_op';
+  $handler->display->display_options['filters']['rid']['expose']['label'] = 'Roles';
+  $handler->display->display_options['filters']['rid']['expose']['use_operator'] = TRUE;
+  $handler->display->display_options['filters']['rid']['expose']['operator'] = 'rid_op';
+  $handler->display->display_options['filters']['rid']['expose']['identifier'] = 'rid';
+  $handler->display->display_options['filters']['rid']['expose']['remember_roles'] = array(
+    2 => '2',
+    19 => 0,
+    11 => 0,
+    1 => 0,
+    7 => 0,
+    18 => 0,
+    16 => 0,
+    21 => 0,
+    3 => 0,
+    15 => 0,
+    8 => 0,
+    13 => 0,
+    20 => 0,
+    6 => 0,
+    10 => 0,
+    17 => 0,
   );
-  $handler->display->display_options['filters']['uid_1']['group'] = 1;
-  /* Filter criterion: boon docking available flag */
+  /* Filter criterion: Flags: Flagged */
   $handler->display->display_options['filters']['flagged']['id'] = 'flagged';
   $handler->display->display_options['filters']['flagged']['table'] = 'flagging';
   $handler->display->display_options['filters']['flagged']['field'] = 'flagged';
   $handler->display->display_options['filters']['flagged']['relationship'] = 'flag_content_rel';
-  $handler->display->display_options['filters']['flagged']['ui_name'] = 'boon docking available flag';
   $handler->display->display_options['filters']['flagged']['value'] = '1';
-  $handler->display->display_options['filters']['flagged']['group'] = 1;
   $handler->display->display_options['filters']['flagged']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['flagged']['expose']['label'] = 'Has BDA Flagged';
-  $handler->display->display_options['filters']['flagged']['expose']['identifier'] = 'bda_flagged';
-  $handler->display->display_options['filters']['flagged']['expose']['remember'] = TRUE;
-  /* Filter criterion: purchased membership flag */
+  $handler->display->display_options['filters']['flagged']['expose']['operator_id'] = '';
+  $handler->display->display_options['filters']['flagged']['expose']['label'] = 'Has Membership Expiring Flag';
+  $handler->display->display_options['filters']['flagged']['expose']['operator'] = 'flagged_op';
+  $handler->display->display_options['filters']['flagged']['expose']['identifier'] = 'flagged';
+  $handler->display->display_options['filters']['flagged']['expose']['remember_roles'] = array(
+    2 => '2',
+    19 => 0,
+    11 => 0,
+    1 => 0,
+    7 => 0,
+    18 => 0,
+    16 => 0,
+    21 => 0,
+    3 => 0,
+    15 => 0,
+    8 => 0,
+    13 => 0,
+    20 => 0,
+    6 => 0,
+    10 => 0,
+    17 => 0,
+  );
+  /* Filter criterion: Flags: Flagged */
   $handler->display->display_options['filters']['flagged_1']['id'] = 'flagged_1';
   $handler->display->display_options['filters']['flagged_1']['table'] = 'flagging';
   $handler->display->display_options['filters']['flagged_1']['field'] = 'flagged';
   $handler->display->display_options['filters']['flagged_1']['relationship'] = 'flag_content_rel_1';
-  $handler->display->display_options['filters']['flagged_1']['ui_name'] = 'purchased membership flag';
-  $handler->display->display_options['filters']['flagged_1']['value'] = '1';
-  $handler->display->display_options['filters']['flagged_1']['group'] = 1;
   $handler->display->display_options['filters']['flagged_1']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['flagged_1']['expose']['label'] = 'Has Purchased Membership Flagged';
-  $handler->display->display_options['filters']['flagged_1']['expose']['identifier'] = 'purchased_memb_flagged';
-  $handler->display->display_options['filters']['flagged_1']['expose']['remember'] = TRUE;
-  /* Filter criterion: membership expiring flag */
+  $handler->display->display_options['filters']['flagged_1']['expose']['operator_id'] = '';
+  $handler->display->display_options['filters']['flagged_1']['expose']['label'] = 'Has BDA Flagged';
+  $handler->display->display_options['filters']['flagged_1']['expose']['operator'] = 'flagged_1_op';
+  $handler->display->display_options['filters']['flagged_1']['expose']['identifier'] = 'flagged_1';
+  $handler->display->display_options['filters']['flagged_1']['expose']['remember_roles'] = array(
+    2 => '2',
+    19 => 0,
+    11 => 0,
+    1 => 0,
+    7 => 0,
+    18 => 0,
+    16 => 0,
+    21 => 0,
+    3 => 0,
+    15 => 0,
+    8 => 0,
+    13 => 0,
+    20 => 0,
+    6 => 0,
+    10 => 0,
+    17 => 0,
+  );
+  /* Filter criterion: Flags: Flagged */
   $handler->display->display_options['filters']['flagged_2']['id'] = 'flagged_2';
   $handler->display->display_options['filters']['flagged_2']['table'] = 'flagging';
   $handler->display->display_options['filters']['flagged_2']['field'] = 'flagged';
   $handler->display->display_options['filters']['flagged_2']['relationship'] = 'flag_content_rel_2';
-  $handler->display->display_options['filters']['flagged_2']['ui_name'] = 'membership expiring flag';
-  $handler->display->display_options['filters']['flagged_2']['value'] = '1';
-  $handler->display->display_options['filters']['flagged_2']['group'] = 1;
   $handler->display->display_options['filters']['flagged_2']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['flagged_2']['expose']['label'] = 'Membership Expiring Flag';
-  $handler->display->display_options['filters']['flagged_2']['expose']['identifier'] = 'membership_expiring_flag';
-  $handler->display->display_options['filters']['flagged_2']['expose']['remember'] = TRUE;
+  $handler->display->display_options['filters']['flagged_2']['expose']['operator_id'] = '';
+  $handler->display->display_options['filters']['flagged_2']['expose']['label'] = 'Has Purchased Membership Flag';
+  $handler->display->display_options['filters']['flagged_2']['expose']['operator'] = 'flagged_2_op';
+  $handler->display->display_options['filters']['flagged_2']['expose']['identifier'] = 'flagged_2';
+  $handler->display->display_options['filters']['flagged_2']['expose']['remember_roles'] = array(
+    2 => '2',
+    19 => 0,
+    11 => 0,
+    1 => 0,
+    7 => 0,
+    18 => 0,
+    16 => 0,
+    21 => 0,
+    3 => 0,
+    15 => 0,
+    8 => 0,
+    13 => 0,
+    20 => 0,
+    6 => 0,
+    10 => 0,
+    17 => 0,
+  );
 
   /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page_1');
-  $handler->display->display_options['path'] = 'showUserInfo';
+  $handler = $view->new_display('page', 'Page', 'page');
+  $handler->display->display_options['path'] = 'showUserInfo2';
   $handler->display->display_options['menu']['type'] = 'normal';
-  $handler->display->display_options['menu']['title'] = 'Show all user info';
-  $handler->display->display_options['menu']['weight'] = '0';
-  $export['view_users_with_filter'] = $view;
+  $handler->display->display_options['menu']['title'] = 'View Users with Filter D7';
+  $export['view_users_with_filter_d7'] = $view;
 
   return $export;
 }

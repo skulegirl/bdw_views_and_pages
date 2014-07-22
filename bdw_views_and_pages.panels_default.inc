@@ -327,7 +327,9 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
     $pane->type = 'entity_field';
     $pane->subtype = 'profile2:field_ba_local_attractions';
     $pane->shown = TRUE;
-    $pane->access = array();
+    $pane->access = array(
+      'plugins' => array(),
+    );
     $pane->configuration = array(
       'label' => 'title',
       'formatter' => 'text_default',
@@ -336,7 +338,7 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
       'delta_reversed' => FALSE,
       'formatter_settings' => array(),
       'context' => 'relationship_profile2_from_user_1',
-      'override_title' => 1,
+      'override_title' => 0,
       'override_title_text' => 'Suggested Local Attractions',
     );
     $pane->cache = array();
@@ -466,7 +468,7 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
  {
    $uid=$user->uid;
    $username=$user->name;
-   print("<p><a href=\'/node/77/");
+   print("<p><a href=\'/messages/new/");
    print($uid);
    print("\'>Send ");
    print($username);
@@ -1002,7 +1004,25 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
     $pane->type = 'entity_field';
     $pane->subtype = 'profile2:field_ba_why_no_bda';
     $pane->shown = TRUE;
-    $pane->access = array();
+    $pane->access = array(
+      'plugins' => array(
+        0 => array(
+          'name' => 'entity_field_value:profile2:boondocking_available:field_ba_bda_pref',
+          'settings' => array(
+            'field_ba_bda_pref' => array(
+              'und' => array(
+                0 => array(
+                  'value' => '1',
+                ),
+              ),
+            ),
+            'field_ba_bda_pref_value' => '1',
+          ),
+          'context' => 'relationship_profile2_from_user_2',
+          'not' => FALSE,
+        ),
+      ),
+    );
     $pane->configuration = array(
       'label' => 'title',
       'formatter' => 'text_default',
@@ -1011,8 +1031,8 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
       'delta_reversed' => FALSE,
       'formatter_settings' => array(),
       'context' => 'relationship_profile2_from_user_2',
-      'override_title' => 0,
-      'override_title_text' => '',
+      'override_title' => 1,
+      'override_title_text' => 'Why I can\'t offer a boondocking location',
     );
     $pane->cache = array();
     $pane->style = array(
@@ -1028,7 +1048,7 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
     $pane->pid = 'new-19';
     $pane->panel = 'center';
     $pane->type = 'entity_field';
-    $pane->subtype = 'profile2:field_profile_body';
+    $pane->subtype = 'profile2:field_user_headline';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
@@ -1040,7 +1060,7 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
       'formatter_settings' => array(),
       'context' => 'relationship_profile2_from_user_1',
       'override_title' => 1,
-      'override_title_text' => '',
+      'override_title_text' => 'In A Few Words...',
     );
     $pane->cache = array();
     $pane->style = array(
@@ -1054,6 +1074,34 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
     $display->panels['center'][0] = 'new-19';
     $pane = new stdClass();
     $pane->pid = 'new-20';
+    $pane->panel = 'center';
+    $pane->type = 'entity_field';
+    $pane->subtype = 'profile2:field_profile_body';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array(
+      'label' => 'title',
+      'formatter' => 'text_default',
+      'delta_limit' => 0,
+      'delta_offset' => '0',
+      'delta_reversed' => FALSE,
+      'formatter_settings' => array(),
+      'context' => 'relationship_profile2_from_user_1',
+      'override_title' => 1,
+      'override_title_text' => 'A Little More Detail',
+    );
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => NULL,
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 1;
+    $pane->locks = array();
+    $display->content['new-20'] = $pane;
+    $display->panels['center'][1] = 'new-20';
+    $pane = new stdClass();
+    $pane->pid = 'new-21';
     $pane->panel = 'left';
     $pane->type = 'entity_field';
     $pane->subtype = 'profile2:field_user_fav_boond_locs';
@@ -1078,10 +1126,10 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $display->content['new-20'] = $pane;
-    $display->panels['left'][0] = 'new-20';
+    $display->content['new-21'] = $pane;
+    $display->panels['left'][0] = 'new-21';
     $pane = new stdClass();
-    $pane->pid = 'new-21';
+    $pane->pid = 'new-22';
     $pane->panel = 'left';
     $pane->type = 'entity_field';
     $pane->subtype = 'profile2:field_user_your_pets';
@@ -1106,10 +1154,10 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
     $pane->extras = array();
     $pane->position = 1;
     $pane->locks = array();
-    $display->content['new-21'] = $pane;
-    $display->panels['left'][1] = 'new-21';
+    $display->content['new-22'] = $pane;
+    $display->panels['left'][1] = 'new-22';
     $pane = new stdClass();
-    $pane->pid = 'new-22';
+    $pane->pid = 'new-23';
     $pane->panel = 'left';
     $pane->type = 'views_panes';
     $pane->subtype = 'user_photos_d7-panel_pane_1';
@@ -1128,10 +1176,10 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
     $pane->extras = array();
     $pane->position = 2;
     $pane->locks = array();
-    $display->content['new-22'] = $pane;
-    $display->panels['left'][2] = 'new-22';
+    $display->content['new-23'] = $pane;
+    $display->panels['left'][2] = 'new-23';
     $pane = new stdClass();
-    $pane->pid = 'new-23';
+    $pane->pid = 'new-24';
     $pane->panel = 'right';
     $pane->type = 'views_panes';
     $pane->subtype = 'rig_view_d7-panel_pane_1';
@@ -1150,8 +1198,8 @@ print \'<h3>\'.BDW_custom_changes_GetBDACount().\' free overnight RV parking loc
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $display->content['new-23'] = $pane;
-    $display->panels['right'][0] = 'new-23';
+    $display->content['new-24'] = $pane;
+    $display->panels['right'][0] = 'new-24';
   $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $mini->display = $display;
