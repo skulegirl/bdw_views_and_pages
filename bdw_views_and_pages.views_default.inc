@@ -1628,6 +1628,8 @@ print $string;
   $handler->display->display_options['fields']['field_user_photo']['table'] = 'field_data_field_user_photo';
   $handler->display->display_options['fields']['field_user_photo']['field'] = 'field_user_photo';
   $handler->display->display_options['fields']['field_user_photo']['relationship'] = 'profile';
+  $handler->display->display_options['fields']['field_user_photo']['label'] = '';
+  $handler->display->display_options['fields']['field_user_photo']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_user_photo']['click_sort_column'] = 'fid';
   $handler->display->display_options['fields']['field_user_photo']['type'] = 'lightbox2';
   $handler->display->display_options['fields']['field_user_photo']['settings'] = array(
