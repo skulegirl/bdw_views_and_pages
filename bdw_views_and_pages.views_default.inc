@@ -1947,7 +1947,7 @@ return TRUE;';
 
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'View Users with Filter D7';
+  $handler->display->display_options['title'] = 'Show User Info';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'role';
   $handler->display->display_options['access']['role'] = array(
@@ -2310,7 +2310,7 @@ return TRUE;';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'showUserInfo2';
+  $handler->display->display_options['path'] = 'showUserInfo';
   $handler->display->display_options['menu']['type'] = 'normal';
   $handler->display->display_options['menu']['title'] = 'View Users with Filter D7';
   $export['view_users_with_filter_d7'] = $view;
