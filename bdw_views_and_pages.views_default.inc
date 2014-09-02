@@ -217,7 +217,7 @@ $view = views_get_current_view();
   $handler->display->display_options['header']['area']['field'] = 'area';
   $handler->display->display_options['header']['area']['content'] = 'Use this map to browse all the locations that our members have available for you to boondock. Click on a marker to see the name of the member and link to their profile. Double click on an unmarked area to zoom in.';
   $handler->display->display_options['header']['area']['format'] = '1';
-  /* Relationship: Field: Your Location (field_boondock_location) */
+  /* Relationship: Profile: Your Location (field_boondock_location) */
   $handler->display->display_options['relationships']['field_boondock_location_lid']['id'] = 'field_boondock_location_lid';
   $handler->display->display_options['relationships']['field_boondock_location_lid']['table'] = 'field_data_field_boondock_location';
   $handler->display->display_options['relationships']['field_boondock_location_lid']['field'] = 'field_boondock_location_lid';
@@ -233,7 +233,7 @@ $view = views_get_current_view();
   $handler->display->display_options['fields']['name']['relationship'] = 'user';
   $handler->display->display_options['fields']['name']['label'] = '';
   $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
-  /* Field: Field: Your Location */
+  /* Field: Profile: Your Location */
   $handler->display->display_options['fields']['field_boondock_location']['id'] = 'field_boondock_location';
   $handler->display->display_options['fields']['field_boondock_location']['table'] = 'field_data_field_boondock_location';
   $handler->display->display_options['fields']['field_boondock_location']['field'] = 'field_boondock_location';
@@ -313,69 +313,69 @@ $view = views_get_current_view();
   );
   $handler->display->display_options['fields']['fieldset']['fieldset']['type'] = 'div';
   $handler->display->display_options['fields']['fieldset']['fieldset']['classes'] = 'fieldgroup group-ba-details';
-  /* Field: Field: Number of Spots */
+  /* Field: Profile: Number of Spots */
   $handler->display->display_options['fields']['field_ba_number_of_spots']['id'] = 'field_ba_number_of_spots';
   $handler->display->display_options['fields']['field_ba_number_of_spots']['table'] = 'field_data_field_ba_number_of_spots';
   $handler->display->display_options['fields']['field_ba_number_of_spots']['field'] = 'field_ba_number_of_spots';
   $handler->display->display_options['fields']['field_ba_number_of_spots']['alter']['preserve_tags'] = '<br> <p>';
   $handler->display->display_options['fields']['field_ba_number_of_spots']['element_type'] = 'span';
-  /* Field: Field: Max RV Length */
+  /* Field: Profile: Max RV Length */
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['id'] = 'field_ba_max_rv_length_int';
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['table'] = 'field_data_field_ba_max_rv_length_int';
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['field'] = 'field_ba_max_rv_length_int';
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['element_type'] = 'span';
-  /* Field: Field: Max Nights */
+  /* Field: Profile: Max Nights */
   $handler->display->display_options['fields']['field_ba_max_nights']['id'] = 'field_ba_max_nights';
   $handler->display->display_options['fields']['field_ba_max_nights']['table'] = 'field_data_field_ba_max_nights';
   $handler->display->display_options['fields']['field_ba_max_nights']['field'] = 'field_ba_max_nights';
   $handler->display->display_options['fields']['field_ba_max_nights']['element_type'] = 'span';
-  /* Field: Field: Pull Through Parking Available */
+  /* Field: Profile: Pull Through Parking Available */
   $handler->display->display_options['fields']['field_ba_pullthrough_spot']['id'] = 'field_ba_pullthrough_spot';
   $handler->display->display_options['fields']['field_ba_pullthrough_spot']['table'] = 'field_data_field_ba_pullthrough_spot';
   $handler->display->display_options['fields']['field_ba_pullthrough_spot']['field'] = 'field_ba_pullthrough_spot';
   $handler->display->display_options['fields']['field_ba_pullthrough_spot']['element_type'] = 'span';
-  /* Field: Field: Hookups Available */
+  /* Field: Profile: Hookups Available */
   $handler->display->display_options['fields']['field_ba_hookups']['id'] = 'field_ba_hookups';
   $handler->display->display_options['fields']['field_ba_hookups']['table'] = 'field_data_field_ba_hookups';
   $handler->display->display_options['fields']['field_ba_hookups']['field'] = 'field_ba_hookups';
   $handler->display->display_options['fields']['field_ba_hookups']['element_type'] = 'span';
   $handler->display->display_options['fields']['field_ba_hookups']['hide_empty'] = TRUE;
   $handler->display->display_options['fields']['field_ba_hookups']['delta_offset'] = '0';
-  /* Field: Field: Slideouts/Awnings Allowed */
+  /* Field: Profile: Slideouts/Awnings Allowed */
   $handler->display->display_options['fields']['field_ba_slideout_awning']['id'] = 'field_ba_slideout_awning';
   $handler->display->display_options['fields']['field_ba_slideout_awning']['table'] = 'field_data_field_ba_slideout_awning';
   $handler->display->display_options['fields']['field_ba_slideout_awning']['field'] = 'field_ba_slideout_awning';
   $handler->display->display_options['fields']['field_ba_slideout_awning']['element_type'] = 'span';
-  /* Field: Field: Generators Allowed */
+  /* Field: Profile: Generators Allowed */
   $handler->display->display_options['fields']['field_generators_allowed']['id'] = 'field_generators_allowed';
   $handler->display->display_options['fields']['field_generators_allowed']['table'] = 'field_data_field_generators_allowed';
   $handler->display->display_options['fields']['field_generators_allowed']['field'] = 'field_generators_allowed';
   $handler->display->display_options['fields']['field_generators_allowed']['element_type'] = 'span';
-  /* Field: Field: Lawn Chairs Allowed */
+  /* Field: Profile: Lawn Chairs Allowed */
   $handler->display->display_options['fields']['field_lawn_chairs_allowed']['id'] = 'field_lawn_chairs_allowed';
   $handler->display->display_options['fields']['field_lawn_chairs_allowed']['table'] = 'field_data_field_lawn_chairs_allowed';
   $handler->display->display_options['fields']['field_lawn_chairs_allowed']['field'] = 'field_lawn_chairs_allowed';
   $handler->display->display_options['fields']['field_lawn_chairs_allowed']['element_type'] = 'span';
-  /* Field: Field: Barbecues Allowed */
+  /* Field: Profile: Barbecues Allowed */
   $handler->display->display_options['fields']['field_barbecues_allowed']['id'] = 'field_barbecues_allowed';
   $handler->display->display_options['fields']['field_barbecues_allowed']['table'] = 'field_data_field_barbecues_allowed';
   $handler->display->display_options['fields']['field_barbecues_allowed']['field'] = 'field_barbecues_allowed';
   $handler->display->display_options['fields']['field_barbecues_allowed']['element_type'] = 'span';
-  /* Field: Field: Pets Welcome */
+  /* Field: Profile: Pets Welcome */
   $handler->display->display_options['fields']['field_ba_pets_welcome']['id'] = 'field_ba_pets_welcome';
   $handler->display->display_options['fields']['field_ba_pets_welcome']['table'] = 'field_data_field_ba_pets_welcome';
   $handler->display->display_options['fields']['field_ba_pets_welcome']['field'] = 'field_ba_pets_welcome';
   $handler->display->display_options['fields']['field_ba_pets_welcome']['element_type'] = 'span';
-  /* Field: Field: Wifi Available */
+  /* Field: Profile: Wifi Available */
   $handler->display->display_options['fields']['field_ba_wifi_available']['id'] = 'field_ba_wifi_available';
   $handler->display->display_options['fields']['field_ba_wifi_available']['table'] = 'field_data_field_ba_wifi_available';
   $handler->display->display_options['fields']['field_ba_wifi_available']['field'] = 'field_ba_wifi_available';
   $handler->display->display_options['fields']['field_ba_wifi_available']['element_type'] = 'span';
-  /* Field: Field: Access Road Conditions */
+  /* Field: Profile: Access Road Conditions */
   $handler->display->display_options['fields']['field_ba_access_road_conditions']['id'] = 'field_ba_access_road_conditions';
   $handler->display->display_options['fields']['field_ba_access_road_conditions']['table'] = 'field_data_field_ba_access_road_conditions';
   $handler->display->display_options['fields']['field_ba_access_road_conditions']['field'] = 'field_ba_access_road_conditions';
-  /* Field: Field: Availability */
+  /* Field: Profile: Availability */
   $handler->display->display_options['fields']['field_ba_availability']['id'] = 'field_ba_availability';
   $handler->display->display_options['fields']['field_ba_availability']['table'] = 'field_data_field_ba_availability';
   $handler->display->display_options['fields']['field_ba_availability']['field'] = 'field_ba_availability';
@@ -555,7 +555,7 @@ $view = views_get_current_view();
   $handler->display->display_options['fields']['url']['exclude'] = TRUE;
   $handler->display->display_options['fields']['url']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['url']['link_to_entity'] = 0;
-  /* Field: Field: Your Location */
+  /* Field: Profile: Your Location */
   $handler->display->display_options['fields']['field_boondock_location']['id'] = 'field_boondock_location';
   $handler->display->display_options['fields']['field_boondock_location']['table'] = 'field_data_field_boondock_location';
   $handler->display->display_options['fields']['field_boondock_location']['field'] = 'field_boondock_location';
@@ -730,7 +730,7 @@ $view = views_get_current_view();
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['style_plugin'] = 'default';
   $handler->display->display_options['row_plugin'] = 'fields';
-  /* Field: Field: Your Rig Photo */
+  /* Field: Profile: Your Rig Photo */
   $handler->display->display_options['fields']['field_user_your_rig_photo']['id'] = 'field_user_your_rig_photo';
   $handler->display->display_options['fields']['field_user_your_rig_photo']['table'] = 'field_data_field_user_your_rig_photo';
   $handler->display->display_options['fields']['field_user_your_rig_photo']['field'] = 'field_user_your_rig_photo';
@@ -744,7 +744,7 @@ $view = views_get_current_view();
     'lightbox_style' => '0',
     'caption' => 'hidden',
   );
-  /* Field: Field: Your Rig */
+  /* Field: Profile: Your Rig */
   $handler->display->display_options['fields']['field_user_your_rig']['id'] = 'field_user_your_rig';
   $handler->display->display_options['fields']['field_user_your_rig']['table'] = 'field_data_field_user_your_rig';
   $handler->display->display_options['fields']['field_user_your_rig']['field'] = 'field_user_your_rig';
@@ -771,13 +771,13 @@ $view = views_get_current_view();
     'profile' => 'profile',
   );
   $handler->display->display_options['filters']['type']['group'] = 1;
-  /* Filter criterion: Field: Your Rig (field_user_your_rig) */
+  /* Filter criterion: Profile: Your Rig (field_user_your_rig) */
   $handler->display->display_options['filters']['field_user_your_rig_value']['id'] = 'field_user_your_rig_value';
   $handler->display->display_options['filters']['field_user_your_rig_value']['table'] = 'field_data_field_user_your_rig';
   $handler->display->display_options['filters']['field_user_your_rig_value']['field'] = 'field_user_your_rig_value';
   $handler->display->display_options['filters']['field_user_your_rig_value']['operator'] = 'not empty';
   $handler->display->display_options['filters']['field_user_your_rig_value']['group'] = 2;
-  /* Filter criterion: Field: Your Rig Photo (field_user_your_rig_photo:fid) */
+  /* Filter criterion: Profile: Your Rig Photo (field_user_your_rig_photo:fid) */
   $handler->display->display_options['filters']['field_user_your_rig_photo_fid']['id'] = 'field_user_your_rig_photo_fid';
   $handler->display->display_options['filters']['field_user_your_rig_photo_fid']['table'] = 'field_data_field_user_your_rig_photo';
   $handler->display->display_options['filters']['field_user_your_rig_photo_fid']['field'] = 'field_user_your_rig_photo_fid';
@@ -1035,7 +1035,7 @@ Otherwise, try <a href="javascript:javascript:history.go(-1)">going back</a> and
   $handler->display->display_options['style_options']['tooltipfield'] = 'name';
   $handler->display->display_options['style_options']['bubbletextfield'] = 'name';
   $handler->display->display_options['row_plugin'] = 'fields';
-  /* Relationship: Field: Your Location (field_boondock_location) */
+  /* Relationship: Profile: Your Location (field_boondock_location) */
   $handler->display->display_options['relationships']['field_boondock_location_lid']['id'] = 'field_boondock_location_lid';
   $handler->display->display_options['relationships']['field_boondock_location_lid']['table'] = 'field_data_field_boondock_location';
   $handler->display->display_options['relationships']['field_boondock_location_lid']['field'] = 'field_boondock_location_lid';
@@ -1060,7 +1060,7 @@ Otherwise, try <a href="javascript:javascript:history.go(-1)">going back</a> and
   $handler->display->display_options['fields']['name']['relationship'] = 'user';
   $handler->display->display_options['fields']['name']['label'] = '';
   $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
-  /* Field: Field: User Photo */
+  /* Field: Profile: User Photo */
   $handler->display->display_options['fields']['field_user_photo']['id'] = 'field_user_photo';
   $handler->display->display_options['fields']['field_user_photo']['table'] = 'field_data_field_user_photo';
   $handler->display->display_options['fields']['field_user_photo']['field'] = 'field_user_photo';
@@ -1072,7 +1072,7 @@ Otherwise, try <a href="javascript:javascript:history.go(-1)">going back</a> and
     'image_style' => 'thumbnail',
     'image_link' => '',
   );
-  /* Field: Field: Your Location */
+  /* Field: Profile: Your Location */
   $handler->display->display_options['fields']['field_boondock_location']['id'] = 'field_boondock_location';
   $handler->display->display_options['fields']['field_boondock_location']['table'] = 'field_data_field_boondock_location';
   $handler->display->display_options['fields']['field_boondock_location']['field'] = 'field_boondock_location';
@@ -1101,19 +1101,19 @@ print $string;
 ?>';
   $handler->display->display_options['fields']['php']['use_php_click_sortable'] = '0';
   $handler->display->display_options['fields']['php']['php_click_sortable'] = '';
-  /* Field: Field: Your Age Range */
+  /* Field: Profile: Your Age Range */
   $handler->display->display_options['fields']['field_user_age_range']['id'] = 'field_user_age_range';
   $handler->display->display_options['fields']['field_user_age_range']['table'] = 'field_data_field_user_age_range';
   $handler->display->display_options['fields']['field_user_age_range']['field'] = 'field_user_age_range';
   $handler->display->display_options['fields']['field_user_age_range']['relationship'] = 'profile';
   $handler->display->display_options['fields']['field_user_age_range']['label'] = 'Host\'s Age Range';
   $handler->display->display_options['fields']['field_user_age_range']['element_type'] = 'span';
-  /* Field: Field: Max Nights */
+  /* Field: Profile: Max Nights */
   $handler->display->display_options['fields']['field_ba_max_nights']['id'] = 'field_ba_max_nights';
   $handler->display->display_options['fields']['field_ba_max_nights']['table'] = 'field_data_field_ba_max_nights';
   $handler->display->display_options['fields']['field_ba_max_nights']['field'] = 'field_ba_max_nights';
   $handler->display->display_options['fields']['field_ba_max_nights']['element_type'] = 'span';
-  /* Field: Field: Max RV Length */
+  /* Field: Profile: Max RV Length */
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['id'] = 'field_ba_max_rv_length_int';
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['table'] = 'field_data_field_ba_max_rv_length_int';
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['field'] = 'field_ba_max_rv_length_int';
@@ -1134,7 +1134,7 @@ print $string;
   $handler->display->display_options['arguments']['distance']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['distance']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['distance']['type'] = 'latlon';
-  /* Contextual filter: Field: Max RV Length (field_ba_max_rv_length_int) */
+  /* Contextual filter: Profile: Max RV Length (field_ba_max_rv_length_int) */
   $handler->display->display_options['arguments']['field_ba_max_rv_length_int_value']['id'] = 'field_ba_max_rv_length_int_value';
   $handler->display->display_options['arguments']['field_ba_max_rv_length_int_value']['table'] = 'field_data_field_ba_max_rv_length_int';
   $handler->display->display_options['arguments']['field_ba_max_rv_length_int_value']['field'] = 'field_ba_max_rv_length_int_value';
@@ -1143,7 +1143,7 @@ print $string;
   $handler->display->display_options['arguments']['field_ba_max_rv_length_int_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_ba_max_rv_length_int_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_ba_max_rv_length_int_value']['break_phrase'] = TRUE;
-  /* Contextual filter: Field: Pull Through Parking Available (field_ba_pullthrough_spot) */
+  /* Contextual filter: Profile: Pull Through Parking Available (field_ba_pullthrough_spot) */
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['id'] = 'field_ba_pullthrough_spot_value';
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['table'] = 'field_data_field_ba_pullthrough_spot';
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['field'] = 'field_ba_pullthrough_spot_value';
@@ -1152,7 +1152,7 @@ print $string;
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['limit'] = '0';
-  /* Contextual filter: Field: Slideouts/Awnings Allowed (field_ba_slideout_awning) */
+  /* Contextual filter: Profile: Slideouts/Awnings Allowed (field_ba_slideout_awning) */
   $handler->display->display_options['arguments']['field_ba_slideout_awning_value']['id'] = 'field_ba_slideout_awning_value';
   $handler->display->display_options['arguments']['field_ba_slideout_awning_value']['table'] = 'field_data_field_ba_slideout_awning';
   $handler->display->display_options['arguments']['field_ba_slideout_awning_value']['field'] = 'field_ba_slideout_awning_value';
@@ -1161,7 +1161,7 @@ print $string;
   $handler->display->display_options['arguments']['field_ba_slideout_awning_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_ba_slideout_awning_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_ba_slideout_awning_value']['limit'] = '0';
-  /* Contextual filter: Field: Generators Allowed (field_generators_allowed) */
+  /* Contextual filter: Profile: Generators Allowed (field_generators_allowed) */
   $handler->display->display_options['arguments']['field_generators_allowed_value']['id'] = 'field_generators_allowed_value';
   $handler->display->display_options['arguments']['field_generators_allowed_value']['table'] = 'field_data_field_generators_allowed';
   $handler->display->display_options['arguments']['field_generators_allowed_value']['field'] = 'field_generators_allowed_value';
@@ -1170,7 +1170,7 @@ print $string;
   $handler->display->display_options['arguments']['field_generators_allowed_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_generators_allowed_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_generators_allowed_value']['limit'] = '0';
-  /* Contextual filter: Field: Pets Welcome (field_ba_pets_welcome) */
+  /* Contextual filter: Profile: Pets Welcome (field_ba_pets_welcome) */
   $handler->display->display_options['arguments']['field_ba_pets_welcome_value']['id'] = 'field_ba_pets_welcome_value';
   $handler->display->display_options['arguments']['field_ba_pets_welcome_value']['table'] = 'field_data_field_ba_pets_welcome';
   $handler->display->display_options['arguments']['field_ba_pets_welcome_value']['field'] = 'field_ba_pets_welcome_value';
@@ -1277,7 +1277,6 @@ print $string;
   $handler->display->display_options['css_class'] = 'testimonial-data';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'none';
-  $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'full';
@@ -1416,7 +1415,7 @@ print $string;
   $handler->display->display_options['style_options']['views_slideshow_cycle']['cleartype'] = 0;
   $handler->display->display_options['style_options']['views_slideshow_cycle']['cleartypenobg'] = 0;
   $handler->display->display_options['row_plugin'] = 'fields';
-  /* Field: Field: Photos of this Boondocking Location */
+  /* Field: Profile: Photos of this Boondocking Location */
   $handler->display->display_options['fields']['field_ba_photo']['id'] = 'field_ba_photo';
   $handler->display->display_options['fields']['field_ba_photo']['table'] = 'field_data_field_ba_photo';
   $handler->display->display_options['fields']['field_ba_photo']['field'] = 'field_ba_photo';
@@ -1451,7 +1450,7 @@ print $string;
   $handler->display->display_options['filters']['type']['value'] = array(
     'boondocking_available' => 'boondocking_available',
   );
-  /* Filter criterion: Field: Photos of this Boondocking Location (field_ba_photo:fid) */
+  /* Filter criterion: Profile: Photos of this Boondocking Location (field_ba_photo:fid) */
   $handler->display->display_options['filters']['field_ba_photo_fid']['id'] = 'field_ba_photo_fid';
   $handler->display->display_options['filters']['field_ba_photo_fid']['table'] = 'field_data_field_ba_photo';
   $handler->display->display_options['filters']['field_ba_photo_fid']['field'] = 'field_ba_photo_fid';
@@ -1532,7 +1531,7 @@ print $string;
   $handler->display->display_options['row_options']['inline'] = array(
     'field_user_your_photos' => 'field_user_your_photos',
   );
-  /* Field: Field: Your Photos */
+  /* Field: Profile: Your Photos */
   $handler->display->display_options['fields']['field_user_your_photos']['id'] = 'field_user_your_photos';
   $handler->display->display_options['fields']['field_user_your_photos']['table'] = 'field_data_field_user_your_photos';
   $handler->display->display_options['fields']['field_user_your_photos']['field'] = 'field_user_your_photos';
@@ -1569,7 +1568,7 @@ print $string;
   $handler->display->display_options['filters']['type']['value'] = array(
     'profile' => 'profile',
   );
-  /* Filter criterion: Field: Your Photos (field_user_your_photos:fid) */
+  /* Filter criterion: Profile: Your Photos (field_user_your_photos:fid) */
   $handler->display->display_options['filters']['field_user_your_photos_fid']['id'] = 'field_user_your_photos_fid';
   $handler->display->display_options['filters']['field_user_your_photos_fid']['table'] = 'field_data_field_user_your_photos';
   $handler->display->display_options['filters']['field_user_your_photos_fid']['field'] = 'field_user_your_photos_fid';
@@ -1623,7 +1622,7 @@ print $string;
   $handler->display->display_options['fields']['name']['table'] = 'users';
   $handler->display->display_options['fields']['name']['field'] = 'name';
   $handler->display->display_options['fields']['name']['link_to_user'] = FALSE;
-  /* Field: Field: User Photo */
+  /* Field: Profile: User Photo */
   $handler->display->display_options['fields']['field_user_photo']['id'] = 'field_user_photo';
   $handler->display->display_options['fields']['field_user_photo']['table'] = 'field_data_field_user_photo';
   $handler->display->display_options['fields']['field_user_photo']['field'] = 'field_user_photo';
@@ -1638,7 +1637,7 @@ print $string;
     'lightbox_style' => '0',
     'caption' => 'hidden',
   );
-  /* Field: Field: Your Age Range */
+  /* Field: Profile: Your Age Range */
   $handler->display->display_options['fields']['field_user_age_range']['id'] = 'field_user_age_range';
   $handler->display->display_options['fields']['field_user_age_range']['table'] = 'field_data_field_user_age_range';
   $handler->display->display_options['fields']['field_user_age_range']['field'] = 'field_user_age_range';
