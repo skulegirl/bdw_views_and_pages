@@ -8,61 +8,51 @@
  * Implements hook_views_default_views().
  */
 function bdw_views_and_pages_views_default_views() {
-  $export = array();
+  $views = array();
 
+  // Exported view: all_user_response_rates
   $view = new view();
-  $view->name = 'SearchByUsername';
-  $view->description = '';
+  $view->name = 'all_user_response_rates';
+  $view->description = 'View with basic user response rate data to go in a panel on user page';
   $view->tag = '';
   $view->base_table = 'users';
-  $view->human_name = 'Search By User Name';
+  $view->human_name = 'All Response Rate';
   $view->core = 6;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
 
   /* Display: Defaults */
   $handler = $view->new_display('default', 'Defaults', 'default');
+  $handler->display->display_options['title'] = 'Response Rate';
   $handler->display->display_options['use_more_always'] = FALSE;
-  $handler->display->display_options['access']['type'] = 'none';
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'view privatemsg response rate data';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
-  $handler->display->display_options['query']['options']['distinct'] = TRUE;
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '25';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
   $handler->display->display_options['style_plugin'] = 'table';
-  $handler->display->display_options['style_options']['grouping'] = '';
   $handler->display->display_options['style_options']['columns'] = array(
-    'name' => 'name',
-    'field_user_photo_fid' => 'field_user_photo_fid',
-    'city' => 'city',
-    'province' => 'province',
-    'country' => 'country',
+    'response_rate' => 'response_rate',
+    'php' => 'php',
+    'response_time' => 'response_time',
   );
-  $handler->display->display_options['style_options']['default'] = 'name';
+  $handler->display->display_options['style_options']['default'] = 'response_rate';
   $handler->display->display_options['style_options']['info'] = array(
-    'name' => array(
+    'response_rate' => array(
       'sortable' => 1,
       'default_sort_order' => 'asc',
       'align' => '',
       'separator' => '',
     ),
-    'field_user_photo_fid' => array(
+    'php' => array(
       'align' => '',
       'separator' => '',
     ),
-    'city' => array(
-      'sortable' => 1,
-      'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-    ),
-    'province' => array(
-      'sortable' => 1,
-      'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-    ),
-    'country' => array(
+    'response_time' => array(
       'sortable' => 1,
       'default_sort_order' => 'asc',
       'align' => '',
@@ -73,111 +63,80 @@ function bdw_views_and_pages_views_default_views() {
   $handler->display->display_options['empty']['area']['id'] = 'area';
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
-  $handler->display->display_options['empty']['area']['label'] = 'Text area';
-  $handler->display->display_options['empty']['area']['content'] = '<?php
-$view = views_get_current_view();
-  if (count($view->exposed_input)) {
-    return "<h3>Sorry, no results were found.  Please adjust your search criteria and try again.</h3>";
-}
-?>';
-  $handler->display->display_options['empty']['area']['format'] = '3';
-  /* Relationship: Broken/missing handler */
-  $handler->display->display_options['relationships']['content_profile_rel_1']['id'] = 'content_profile_rel_1';
-  $handler->display->display_options['relationships']['content_profile_rel_1']['table'] = 'users';
-  $handler->display->display_options['relationships']['content_profile_rel_1']['field'] = 'content_profile_rel';
-  $handler->display->display_options['relationships']['content_profile_rel_1']['ui_name'] = 'Node: Boondocking Available';
-  $handler->display->display_options['relationships']['content_profile_rel_1']['label'] = 'Boondocking Available';
-  /* Relationship: Broken/missing handler */
-  $handler->display->display_options['relationships']['content_profile_rel']['id'] = 'content_profile_rel';
-  $handler->display->display_options['relationships']['content_profile_rel']['table'] = 'users';
-  $handler->display->display_options['relationships']['content_profile_rel']['field'] = 'content_profile_rel';
-  $handler->display->display_options['relationships']['content_profile_rel']['label'] = 'Content Profile';
+  $handler->display->display_options['empty']['area']['content'] = 'No response rate is available for this user. See our FAQ about response rates for more details.';
+  $handler->display->display_options['empty']['area']['format'] = '2';
+  /* Field: Global: PHP */
+  $handler->display->display_options['fields']['php']['id'] = 'php';
+  $handler->display->display_options['fields']['php']['table'] = 'views';
+  $handler->display->display_options['fields']['php']['field'] = 'php';
+  $handler->display->display_options['fields']['php']['label'] = '';
+  $handler->display->display_options['fields']['php']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['php']['use_php_setup'] = 0;
+  $handler->display->display_options['fields']['php']['php_output'] = '<?php
+      $thumbsUpLoc = drupal_get_path(\'module\', \'pm_response_rate\') . \'/images/ThumbsUp.png\';
+      $thumbsDownLoc = drupal_get_path(\'module\', \'pm_response_rate\') . \'/images/ThumbsDown.png\';
+      if ($data->pm_response_rate_response_rate >= 80)
+      {
+         // output thumbs up
+         
+         echo "<img class=\'response-rate-icon\' src=\'/" . $thumbsUpLoc . "\' width=\'30px\'>";
+      }
+      else if ($data->pm_response_rate_response_rate <50)
+      {
+        // output thumbs down
+         echo "<img class=\'response-rate-icon\' src=\'/" . $thumbsDownLoc . "\' width=\'30px\'>";
+      }
+      ?>
+      ';
+  $handler->display->display_options['fields']['php']['use_php_click_sortable'] = '0';
+  $handler->display->display_options['fields']['php']['php_click_sortable'] = '';
   /* Field: User: Name */
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'users';
   $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['hide_alter_empty'] = FALSE;
-  /* Field: Broken/missing handler */
-  $handler->display->display_options['fields']['field_user_photo_fid']['id'] = 'field_user_photo_fid';
-  $handler->display->display_options['fields']['field_user_photo_fid']['table'] = 'node_data_field_user_photo';
-  $handler->display->display_options['fields']['field_user_photo_fid']['field'] = 'field_user_photo_fid';
-  $handler->display->display_options['fields']['field_user_photo_fid']['relationship'] = 'content_profile_rel';
-  $handler->display->display_options['fields']['field_user_photo_fid']['label'] = 'User Photo';
-  $handler->display->display_options['fields']['field_user_photo_fid']['alter']['make_link'] = TRUE;
-  $handler->display->display_options['fields']['field_user_photo_fid']['alter']['path'] = 'users/[name]';
-  $handler->display->display_options['fields']['field_user_photo_fid']['alter']['replace_spaces'] = TRUE;
-  $handler->display->display_options['fields']['field_user_photo_fid']['hide_empty'] = TRUE;
-  $handler->display->display_options['fields']['field_user_photo_fid']['hide_alter_empty'] = FALSE;
-  /* Field: Location: City */
-  $handler->display->display_options['fields']['city']['id'] = 'city';
-  $handler->display->display_options['fields']['city']['table'] = 'location';
-  $handler->display->display_options['fields']['city']['field'] = 'city';
-  $handler->display->display_options['fields']['city']['relationship'] = 'content_profile_rel_1';
-  $handler->display->display_options['fields']['city']['hide_alter_empty'] = FALSE;
-  /* Field: Location: Province */
-  $handler->display->display_options['fields']['province']['id'] = 'province';
-  $handler->display->display_options['fields']['province']['table'] = 'location';
-  $handler->display->display_options['fields']['province']['field'] = 'province';
-  $handler->display->display_options['fields']['province']['relationship'] = 'content_profile_rel_1';
-  $handler->display->display_options['fields']['province']['hide_alter_empty'] = FALSE;
-  /* Field: Location: Country */
-  $handler->display->display_options['fields']['country']['id'] = 'country';
-  $handler->display->display_options['fields']['country']['table'] = 'location';
-  $handler->display->display_options['fields']['country']['field'] = 'country';
-  $handler->display->display_options['fields']['country']['relationship'] = 'content_profile_rel_1';
-  $handler->display->display_options['fields']['country']['hide_alter_empty'] = FALSE;
-  /* Contextual filter: Global: Null */
-  $handler->display->display_options['arguments']['null']['id'] = 'null';
-  $handler->display->display_options['arguments']['null']['table'] = 'views';
-  $handler->display->display_options['arguments']['null']['field'] = 'null';
-  $handler->display->display_options['arguments']['null']['default_action'] = 'default';
-  $handler->display->display_options['arguments']['null']['exception']['title_enable'] = TRUE;
-  $handler->display->display_options['arguments']['null']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['null']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['null']['specify_validation'] = TRUE;
-  $handler->display->display_options['arguments']['null']['validate']['type'] = 'php';
-  $handler->display->display_options['arguments']['null']['validate_options']['code'] = 'if (count($view->exposed_input)) { return TRUE; }';
-  $handler->display->display_options['arguments']['null']['validate']['fail'] = 'empty';
-  /* Filter criterion: User Name */
-  $handler->display->display_options['filters']['name']['id'] = 'name';
-  $handler->display->display_options['filters']['name']['table'] = 'users';
-  $handler->display->display_options['filters']['name']['field'] = 'name';
-  $handler->display->display_options['filters']['name']['ui_name'] = 'User Name';
-  $handler->display->display_options['filters']['name']['group'] = '0';
-  $handler->display->display_options['filters']['name']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['name']['expose']['operator_id'] = 'name_op';
-  $handler->display->display_options['filters']['name']['expose']['label'] = 'User Name';
-  $handler->display->display_options['filters']['name']['expose']['use_operator'] = TRUE;
-  $handler->display->display_options['filters']['name']['expose']['operator'] = 'name_op';
-  $handler->display->display_options['filters']['name']['expose']['identifier'] = 'name';
-  $handler->display->display_options['filters']['name']['expose']['remember'] = TRUE;
+  /* Field: Privatemsg: Response Rate */
+  $handler->display->display_options['fields']['response_rate']['id'] = 'response_rate';
+  $handler->display->display_options['fields']['response_rate']['table'] = 'pm_response_rate';
+  $handler->display->display_options['fields']['response_rate']['field'] = 'response_rate';
+  $handler->display->display_options['fields']['response_rate']['element_wrapper_type'] = '0';
+  $handler->display->display_options['fields']['response_rate']['suffix'] = '%';
+  /* Field: Privatemsg: Response Time */
+  $handler->display->display_options['fields']['response_time']['id'] = 'response_time';
+  $handler->display->display_options['fields']['response_time']['table'] = 'pm_response_rate';
+  $handler->display->display_options['fields']['response_time']['field'] = 'response_time';
+  $handler->display->display_options['fields']['response_time']['label'] = 'Average Response Time';
+  $handler->display->display_options['fields']['response_time']['element_wrapper_type'] = 'div';
+  /* Field: Privatemsg: Messages Used */
+  $handler->display->display_options['fields']['messages_used']['id'] = 'messages_used';
+  $handler->display->display_options['fields']['messages_used']['table'] = 'pm_response_rate';
+  $handler->display->display_options['fields']['messages_used']['field'] = 'messages_used';
+  /* Field: User: Roles */
+  $handler->display->display_options['fields']['rid']['id'] = 'rid';
+  $handler->display->display_options['fields']['rid']['table'] = 'users_roles';
+  $handler->display->display_options['fields']['rid']['field'] = 'rid';
+  /* Filter criterion: Privatemsg: Response Rate */
+  $handler->display->display_options['filters']['response_rate']['id'] = 'response_rate';
+  $handler->display->display_options['filters']['response_rate']['table'] = 'pm_response_rate';
+  $handler->display->display_options['filters']['response_rate']['field'] = 'response_rate';
+  $handler->display->display_options['filters']['response_rate']['operator'] = 'not empty';
   /* Filter criterion: User: Roles */
   $handler->display->display_options['filters']['rid']['id'] = 'rid';
   $handler->display->display_options['filters']['rid']['table'] = 'users_roles';
   $handler->display->display_options['filters']['rid']['field'] = 'rid';
-  $handler->display->display_options['filters']['rid']['operator'] = 'not';
   $handler->display->display_options['filters']['rid']['value'] = array(
-    11 => '11',
-    16 => '16',
-    6 => '6',
-  );
-  $handler->display->display_options['filters']['rid']['group'] = '0';
-  /* Filter criterion: User: Roles */
-  $handler->display->display_options['filters']['rid_1']['id'] = 'rid_1';
-  $handler->display->display_options['filters']['rid_1']['table'] = 'users_roles';
-  $handler->display->display_options['filters']['rid_1']['field'] = 'rid';
-  $handler->display->display_options['filters']['rid_1']['value'] = array(
     8 => '8',
   );
-  $handler->display->display_options['filters']['rid_1']['group'] = '0';
 
-  /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page_1');
-  $handler->display->display_options['defaults']['title'] = FALSE;
-  $handler->display->display_options['title'] = 'Search Users By Username';
-  $handler->display->display_options['path'] = 'SearchByName';
-  $export['SearchByUsername'] = $view;
+  /* Display: All User Response Rates */
+  $handler = $view->new_display('page', 'All User Response Rates', 'all_user_response_rates');
+  $handler->display->display_options['path'] = 'user_response_rates';
+  $handler->display->display_options['menu']['type'] = 'normal';
+  $handler->display->display_options['menu']['title'] = 'User Response Rates';
+  $handler->display->display_options['menu']['weight'] = '20';
 
+  $views[$view->name] = $view;
+
+  // Exported view: all_users_map
   $view = new view();
   $view->name = 'all_users_map';
   $view->description = '';
@@ -191,6 +150,7 @@ $view = views_get_current_view();
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'Member Boondocking Locations';
+  $handler->display->display_options['css_class'] = 'AllUserMapView';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
@@ -198,7 +158,7 @@ $view = views_get_current_view();
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'none';
   $handler->display->display_options['style_plugin'] = 'gmap';
-  $handler->display->display_options['style_options']['macro'] = '[gmap height=600px | width=100%]';
+  $handler->display->display_options['style_options']['macro'] = '[gmap zoom=3| width=100%]';
   $handler->display->display_options['style_options']['markertype'] = 'small red';
   $handler->display->display_options['style_options']['latfield'] = 'name';
   $handler->display->display_options['style_options']['lonfield'] = 'name';
@@ -215,8 +175,9 @@ $view = views_get_current_view();
   $handler->display->display_options['header']['area']['id'] = 'area';
   $handler->display->display_options['header']['area']['table'] = 'views';
   $handler->display->display_options['header']['area']['field'] = 'area';
-  $handler->display->display_options['header']['area']['content'] = 'Use this map to browse all the locations that our members have available for you to boondock. Click on a marker to see the name of the member and link to their profile. Double click on an unmarked area to zoom in.';
-  $handler->display->display_options['header']['area']['format'] = '1';
+  $handler->display->display_options['header']['area']['content'] = '<p>Use this map to browse all the locations that our members have available for you to boondock. Click on a single small red marker to see the name of a member and link to their profile. Double click on an unmarked area or single click on a cluster to zoom in.</p>
+<p><div class=\'fine-print\'>Note: All host locations have been generalized for members\' security. Exact coordinates and/or directions can be revealed by the host after making contact through this site.</div></p>';
+  $handler->display->display_options['header']['area']['format'] = '5';
   /* Relationship: Profile: Your Location (field_boondock_location) */
   $handler->display->display_options['relationships']['field_boondock_location_lid']['id'] = 'field_boondock_location_lid';
   $handler->display->display_options['relationships']['field_boondock_location_lid']['table'] = 'field_data_field_boondock_location';
@@ -262,15 +223,29 @@ $view = views_get_current_view();
   $handler->display->display_options['filters']['rid']['value'] = array(
     8 => '8',
   );
+  /* Filter criterion: User: Active */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'users';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['relationship'] = 'user';
+  $handler->display->display_options['filters']['status']['value'] = '1';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['path'] = 'showAllUsersMap';
+  $handler->display->display_options['menu']['type'] = 'normal';
+  $handler->display->display_options['menu']['title'] = 'Show All Listings';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'main-menu';
+  $handler->display->display_options['menu']['context'] = 0;
+  $handler->display->display_options['menu']['context_only_inline'] = 0;
 
   /* Display: Content pane */
   $handler = $view->new_display('panel_pane', 'Content pane', 'panel_pane_1');
-  $export['all_users_map'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: bda_details_d7
   $view = new view();
   $view->name = 'bda_details_d7';
   $view->description = '';
@@ -291,53 +266,36 @@ $view = views_get_current_view();
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['style_plugin'] = 'default';
   $handler->display->display_options['row_plugin'] = 'fields';
-  /* Field: Global: Fieldset */
-  $handler->display->display_options['fields']['fieldset']['id'] = 'fieldset';
-  $handler->display->display_options['fields']['fieldset']['table'] = 'views';
-  $handler->display->display_options['fields']['fieldset']['field'] = 'fieldset';
-  $handler->display->display_options['fields']['fieldset']['label'] = 'Details';
-  $handler->display->display_options['fields']['fieldset']['children'] = array(
-    0 => 'field_ba_number_of_spots',
-    1 => 'field_ba_max_rv_length_int',
-    2 => 'field_ba_max_nights',
-    3 => 'field_ba_pullthrough_spot',
-    4 => 'field_ba_hookups',
-    5 => 'field_ba_slideout_awning',
-    6 => 'field_generators_allowed',
-    7 => 'field_lawn_chairs_allowed',
-    8 => 'field_barbecues_allowed',
-    9 => 'field_ba_pets_welcome',
-    10 => 'field_ba_wifi_available',
-    11 => 'field_ba_access_road_conditions',
-    12 => 'field_ba_availability',
-  );
-  $handler->display->display_options['fields']['fieldset']['fieldset']['type'] = 'div';
-  $handler->display->display_options['fields']['fieldset']['fieldset']['classes'] = 'fieldgroup group-ba-details';
   /* Field: Profile: Number of Spots */
   $handler->display->display_options['fields']['field_ba_number_of_spots']['id'] = 'field_ba_number_of_spots';
   $handler->display->display_options['fields']['field_ba_number_of_spots']['table'] = 'field_data_field_ba_number_of_spots';
   $handler->display->display_options['fields']['field_ba_number_of_spots']['field'] = 'field_ba_number_of_spots';
+  $handler->display->display_options['fields']['field_ba_number_of_spots']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_ba_number_of_spots']['alter']['preserve_tags'] = '<br> <p>';
   $handler->display->display_options['fields']['field_ba_number_of_spots']['element_type'] = 'span';
   /* Field: Profile: Max RV Length */
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['id'] = 'field_ba_max_rv_length_int';
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['table'] = 'field_data_field_ba_max_rv_length_int';
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['field'] = 'field_ba_max_rv_length_int';
+  $handler->display->display_options['fields']['field_ba_max_rv_length_int']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['element_type'] = 'span';
   /* Field: Profile: Max Nights */
   $handler->display->display_options['fields']['field_ba_max_nights']['id'] = 'field_ba_max_nights';
   $handler->display->display_options['fields']['field_ba_max_nights']['table'] = 'field_data_field_ba_max_nights';
   $handler->display->display_options['fields']['field_ba_max_nights']['field'] = 'field_ba_max_nights';
+  $handler->display->display_options['fields']['field_ba_max_nights']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_ba_max_nights']['element_type'] = 'span';
   /* Field: Profile: Pull Through Parking Available */
   $handler->display->display_options['fields']['field_ba_pullthrough_spot']['id'] = 'field_ba_pullthrough_spot';
   $handler->display->display_options['fields']['field_ba_pullthrough_spot']['table'] = 'field_data_field_ba_pullthrough_spot';
   $handler->display->display_options['fields']['field_ba_pullthrough_spot']['field'] = 'field_ba_pullthrough_spot';
+  $handler->display->display_options['fields']['field_ba_pullthrough_spot']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_ba_pullthrough_spot']['element_type'] = 'span';
   /* Field: Profile: Hookups Available */
   $handler->display->display_options['fields']['field_ba_hookups']['id'] = 'field_ba_hookups';
   $handler->display->display_options['fields']['field_ba_hookups']['table'] = 'field_data_field_ba_hookups';
   $handler->display->display_options['fields']['field_ba_hookups']['field'] = 'field_ba_hookups';
+  $handler->display->display_options['fields']['field_ba_hookups']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_ba_hookups']['element_type'] = 'span';
   $handler->display->display_options['fields']['field_ba_hookups']['hide_empty'] = TRUE;
   $handler->display->display_options['fields']['field_ba_hookups']['delta_offset'] = '0';
@@ -345,40 +303,53 @@ $view = views_get_current_view();
   $handler->display->display_options['fields']['field_ba_slideout_awning']['id'] = 'field_ba_slideout_awning';
   $handler->display->display_options['fields']['field_ba_slideout_awning']['table'] = 'field_data_field_ba_slideout_awning';
   $handler->display->display_options['fields']['field_ba_slideout_awning']['field'] = 'field_ba_slideout_awning';
+  $handler->display->display_options['fields']['field_ba_slideout_awning']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_ba_slideout_awning']['element_type'] = 'span';
   /* Field: Profile: Generators Allowed */
   $handler->display->display_options['fields']['field_generators_allowed']['id'] = 'field_generators_allowed';
   $handler->display->display_options['fields']['field_generators_allowed']['table'] = 'field_data_field_generators_allowed';
   $handler->display->display_options['fields']['field_generators_allowed']['field'] = 'field_generators_allowed';
+  $handler->display->display_options['fields']['field_generators_allowed']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_generators_allowed']['element_type'] = 'span';
   /* Field: Profile: Lawn Chairs Allowed */
   $handler->display->display_options['fields']['field_lawn_chairs_allowed']['id'] = 'field_lawn_chairs_allowed';
   $handler->display->display_options['fields']['field_lawn_chairs_allowed']['table'] = 'field_data_field_lawn_chairs_allowed';
   $handler->display->display_options['fields']['field_lawn_chairs_allowed']['field'] = 'field_lawn_chairs_allowed';
+  $handler->display->display_options['fields']['field_lawn_chairs_allowed']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_lawn_chairs_allowed']['element_type'] = 'span';
   /* Field: Profile: Barbecues Allowed */
   $handler->display->display_options['fields']['field_barbecues_allowed']['id'] = 'field_barbecues_allowed';
   $handler->display->display_options['fields']['field_barbecues_allowed']['table'] = 'field_data_field_barbecues_allowed';
   $handler->display->display_options['fields']['field_barbecues_allowed']['field'] = 'field_barbecues_allowed';
+  $handler->display->display_options['fields']['field_barbecues_allowed']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_barbecues_allowed']['element_type'] = 'span';
   /* Field: Profile: Pets Welcome */
   $handler->display->display_options['fields']['field_ba_pets_welcome']['id'] = 'field_ba_pets_welcome';
   $handler->display->display_options['fields']['field_ba_pets_welcome']['table'] = 'field_data_field_ba_pets_welcome';
   $handler->display->display_options['fields']['field_ba_pets_welcome']['field'] = 'field_ba_pets_welcome';
+  $handler->display->display_options['fields']['field_ba_pets_welcome']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_ba_pets_welcome']['element_type'] = 'span';
   /* Field: Profile: Wifi Available */
   $handler->display->display_options['fields']['field_ba_wifi_available']['id'] = 'field_ba_wifi_available';
   $handler->display->display_options['fields']['field_ba_wifi_available']['table'] = 'field_data_field_ba_wifi_available';
   $handler->display->display_options['fields']['field_ba_wifi_available']['field'] = 'field_ba_wifi_available';
+  $handler->display->display_options['fields']['field_ba_wifi_available']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_ba_wifi_available']['element_type'] = 'span';
-  /* Field: Profile: Access Road Conditions */
-  $handler->display->display_options['fields']['field_ba_access_road_conditions']['id'] = 'field_ba_access_road_conditions';
-  $handler->display->display_options['fields']['field_ba_access_road_conditions']['table'] = 'field_data_field_ba_access_road_conditions';
-  $handler->display->display_options['fields']['field_ba_access_road_conditions']['field'] = 'field_ba_access_road_conditions';
-  /* Field: Profile: Availability */
-  $handler->display->display_options['fields']['field_ba_availability']['id'] = 'field_ba_availability';
-  $handler->display->display_options['fields']['field_ba_availability']['table'] = 'field_data_field_ba_availability';
-  $handler->display->display_options['fields']['field_ba_availability']['field'] = 'field_ba_availability';
+  /* Field: Global: PHP */
+  $handler->display->display_options['fields']['php']['id'] = 'php';
+  $handler->display->display_options['fields']['php']['table'] = 'views';
+  $handler->display->display_options['fields']['php']['field'] = 'php';
+  $handler->display->display_options['fields']['php']['label'] = '';
+  $handler->display->display_options['fields']['php']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['php']['use_php_setup'] = 0;
+  $handler->display->display_options['fields']['php']['php_output'] = '<?php
+module_load_include(\'inc\', \'BDW_custom_changes\');
+BDW_echo_BDA_legend();
+BDW_echo_BDA_details($data);
+BDW_echo_BDA_services($data);
+?>';
+  $handler->display->display_options['fields']['php']['use_php_click_sortable'] = '0';
+  $handler->display->display_options['fields']['php']['php_click_sortable'] = '';
   /* Contextual filter: Profile: User uid */
   $handler->display->display_options['arguments']['user']['id'] = 'user';
   $handler->display->display_options['arguments']['user']['table'] = 'profile';
@@ -399,7 +370,6 @@ $view = views_get_current_view();
   /* Display: Content pane */
   $handler = $view->new_display('panel_pane', 'Content pane', 'panel_pane_1');
   $handler->display->display_options['defaults']['title'] = FALSE;
-  $handler->display->display_options['title'] = 'Details';
   $handler->display->display_options['argument_input'] = array(
     'user' => array(
       'type' => 'context',
@@ -410,8 +380,10 @@ $view = views_get_current_view();
       'label' => 'Profile: User uid',
     ),
   );
-  $export['bda_details_d7'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: bda_info
   $view = new view();
   $view->name = 'bda_info';
   $view->description = '';
@@ -518,8 +490,10 @@ $view = views_get_current_view();
   $handler->display->display_options['menu']['title'] = 'bda updates';
   $handler->display->display_options['menu']['description'] = 'A list of BDA entries, by most recently changed/added.';
   $handler->display->display_options['menu']['weight'] = '10';
-  $export['bda_info'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: bda_loc_block
   $view = new view();
   $view->name = 'bda_loc_block';
   $view->description = 'List of 5 most recently added boondocking locations';
@@ -542,6 +516,12 @@ $view = views_get_current_view();
   $handler->display->display_options['pager']['options']['items_per_page'] = '5';
   $handler->display->display_options['style_plugin'] = 'default';
   $handler->display->display_options['row_plugin'] = 'fields';
+  /* Header: Global: Text area */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['content'] = '<img src=\'/sites/boondockerswelcome.com/files/media/iconsets/misc/map-markers-icon-watermark.png\'>';
+  $handler->display->display_options['header']['area']['format'] = '5';
   /* Relationship: Profile: User uid */
   $handler->display->display_options['relationships']['user']['id'] = 'user';
   $handler->display->display_options['relationships']['user']['table'] = 'profile';
@@ -590,11 +570,353 @@ $view = views_get_current_view();
   $handler->display->display_options['filters']['rid']['value'] = array(
     8 => '8',
   );
+  /* Filter criterion: User: Active */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'users';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['relationship'] = 'user';
+  $handler->display->display_options['filters']['status']['value'] = '1';
 
   /* Display: Block */
   $handler = $view->new_display('block', 'Block', 'block');
-  $export['bda_loc_block'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: content_listing
+  $view = new view();
+  $view->name = 'content_listing';
+  $view->description = '';
+  $view->tag = 'default';
+  $view->base_table = 'node';
+  $view->human_name = 'Content Listing';
+  $view->core = 7;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Content-Listing';
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'role';
+  $handler->display->display_options['access']['role'] = array(
+    7 => '7',
+    6 => '6',
+    17 => '17',
+  );
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['pager']['options']['quantity'] = '9';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page'] = TRUE;
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_options'] = '5, 10, 20, 40, 60, 100, 200';
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'title' => 'title',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
+    'title' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+  );
+  /* Field: Content: Title */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'node';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['label'] = '';
+  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+  /* Field: Content: Type */
+  $handler->display->display_options['fields']['type']['id'] = 'type';
+  $handler->display->display_options['fields']['type']['table'] = 'node';
+  $handler->display->display_options['fields']['type']['field'] = 'type';
+  /* Field: Content: Updated date */
+  $handler->display->display_options['fields']['changed']['id'] = 'changed';
+  $handler->display->display_options['fields']['changed']['table'] = 'node';
+  $handler->display->display_options['fields']['changed']['field'] = 'changed';
+  $handler->display->display_options['fields']['changed']['date_format'] = 'privatemsg_current_day';
+  /* Field: Bulk operations: Content */
+  $handler->display->display_options['fields']['views_bulk_operations']['id'] = 'views_bulk_operations';
+  $handler->display->display_options['fields']['views_bulk_operations']['table'] = 'node';
+  $handler->display->display_options['fields']['views_bulk_operations']['field'] = 'views_bulk_operations';
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['display_type'] = '0';
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['enable_select_all_pages'] = 1;
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['force_single'] = 0;
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['entity_load_capacity'] = '10';
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_operations'] = array(
+    'action::uc_product_action_add_to_cart' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_assign_owner_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::views_bulk_operations_delete_item' => array(
+      'selected' => 1,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::views_bulk_operations_delete_revision' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::views_bulk_operations_script_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::flag_node_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_make_sticky_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_make_unsticky_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::views_bulk_operations_modify_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+      'settings' => array(
+        'show_all_tokens' => 1,
+        'display_values' => array(
+          '_all_' => '_all_',
+        ),
+      ),
+    ),
+    'action::views_bulk_operations_argument_selector_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+      'settings' => array(
+        'url' => '',
+      ),
+    ),
+    'action::node_promote_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_publish_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_unpromote_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_save_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::system_send_email_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_unpublish_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_unpublish_by_keyword_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::pathauto_node_update_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+  );
+  /* Sort criterion: Content: Post date */
+  $handler->display->display_options['sorts']['created']['id'] = 'created';
+  $handler->display->display_options['sorts']['created']['table'] = 'node';
+  $handler->display->display_options['sorts']['created']['field'] = 'created';
+  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
+  /* Filter criterion: Content: Published */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'node';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = 1;
+  $handler->display->display_options['filters']['status']['group'] = 1;
+  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+  /* Filter criterion: Content: Type */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'node';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['type']['expose']['operator_id'] = 'type_op';
+  $handler->display->display_options['filters']['type']['expose']['label'] = 'Type';
+  $handler->display->display_options['filters']['type']['expose']['operator'] = 'type_op';
+  $handler->display->display_options['filters']['type']['expose']['identifier'] = 'type';
+  $handler->display->display_options['filters']['type']['expose']['multiple'] = TRUE;
+  $handler->display->display_options['filters']['type']['expose']['remember_roles'] = array(
+    2 => '2',
+    19 => 0,
+    11 => 0,
+    1 => 0,
+    7 => 0,
+    18 => 0,
+    16 => 0,
+    21 => 0,
+    3 => 0,
+    15 => 0,
+    8 => 0,
+    13 => 0,
+    20 => 0,
+    6 => 0,
+    10 => 0,
+    17 => 0,
+  );
+
+  /* Display: Page */
+  $handler = $view->new_display('page', 'Page', 'page');
+  $handler->display->display_options['path'] = 'content-listing';
+
+  $views[$view->name] = $view;
+
+  // Exported view: group_memberships
+  $view = new view();
+  $view->name = 'group_memberships';
+  $view->description = '';
+  $view->tag = 'default';
+  $view->base_table = 'profile';
+  $view->human_name = 'group memberships';
+  $view->core = 7;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Memberships';
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'none';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['style_plugin'] = 'default';
+  $handler->display->display_options['row_plugin'] = 'fields';
+  /* Field: Profile: Escapee Member */
+  $handler->display->display_options['fields']['field_escapee_member']['id'] = 'field_escapee_member';
+  $handler->display->display_options['fields']['field_escapee_member']['table'] = 'field_data_field_escapee_member';
+  $handler->display->display_options['fields']['field_escapee_member']['field'] = 'field_escapee_member';
+  $handler->display->display_options['fields']['field_escapee_member']['label'] = '';
+  $handler->display->display_options['fields']['field_escapee_member']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_escapee_member']['element_label_colon'] = FALSE;
+  /* Field: Profile: RVillage Member */
+  $handler->display->display_options['fields']['field_rvillage_member']['id'] = 'field_rvillage_member';
+  $handler->display->display_options['fields']['field_rvillage_member']['table'] = 'field_data_field_rvillage_member';
+  $handler->display->display_options['fields']['field_rvillage_member']['field'] = 'field_rvillage_member';
+  $handler->display->display_options['fields']['field_rvillage_member']['label'] = '';
+  $handler->display->display_options['fields']['field_rvillage_member']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_rvillage_member']['element_label_colon'] = FALSE;
+  /* Field: Profile: RVillage User Name */
+  $handler->display->display_options['fields']['field_rvillage_member_data']['id'] = 'field_rvillage_member_data';
+  $handler->display->display_options['fields']['field_rvillage_member_data']['table'] = 'field_data_field_rvillage_member_data';
+  $handler->display->display_options['fields']['field_rvillage_member_data']['field'] = 'field_rvillage_member_data';
+  $handler->display->display_options['fields']['field_rvillage_member_data']['label'] = '';
+  $handler->display->display_options['fields']['field_rvillage_member_data']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_rvillage_member_data']['element_label_colon'] = FALSE;
+  /* Field: Profile: SKP Membership Number */
+  $handler->display->display_options['fields']['field_escapee_member_data']['id'] = 'field_escapee_member_data';
+  $handler->display->display_options['fields']['field_escapee_member_data']['table'] = 'field_data_field_escapee_member_data';
+  $handler->display->display_options['fields']['field_escapee_member_data']['field'] = 'field_escapee_member_data';
+  $handler->display->display_options['fields']['field_escapee_member_data']['label'] = '';
+  $handler->display->display_options['fields']['field_escapee_member_data']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_escapee_member_data']['element_label_colon'] = FALSE;
+  /* Field: Global: PHP */
+  $handler->display->display_options['fields']['php']['id'] = 'php';
+  $handler->display->display_options['fields']['php']['table'] = 'views';
+  $handler->display->display_options['fields']['php']['field'] = 'php';
+  $handler->display->display_options['fields']['php']['label'] = '';
+  $handler->display->display_options['fields']['php']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['php']['use_php_setup'] = 0;
+  $handler->display->display_options['fields']['php']['php_output'] = '<?php
+  module_load_include(\'inc\', \'BDW_custom_changes\');
+  BDW_echo_group_memberships($data);
+?>';
+  $handler->display->display_options['fields']['php']['use_php_click_sortable'] = '0';
+  $handler->display->display_options['fields']['php']['php_click_sortable'] = '';
+  /* Contextual filter: Profile: User uid */
+  $handler->display->display_options['arguments']['user']['id'] = 'user';
+  $handler->display->display_options['arguments']['user']['table'] = 'profile';
+  $handler->display->display_options['arguments']['user']['field'] = 'user';
+  $handler->display->display_options['arguments']['user']['default_action'] = 'not found';
+  $handler->display->display_options['arguments']['user']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['user']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['user']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['user']['summary_options']['items_per_page'] = '25';
+  /* Filter criterion: Profile: Type */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'profile';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['value'] = array(
+    'profile' => 'profile',
+  );
+
+  $views[$view->name] = $view;
+
+  // Exported view: my_bookmarked_users
   $view = new view();
   $view->name = 'my_bookmarked_users';
   $view->description = '';
@@ -657,7 +979,8 @@ $view = views_get_current_view();
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['label'] = 'Text area';
-  $handler->display->display_options['empty']['area']['content'] = 'You currently do not have any bookmarked members. Click on the bookmark tab on the left side of a user\'s profile to add them to your bookmark list.';
+  $handler->display->display_options['empty']['area']['empty'] = TRUE;
+  $handler->display->display_options['empty']['area']['content'] = 'You currently do not have any bookmarked members. Click on the bookmark link at the top of a user\'s profile to add them to your bookmark list.';
   $handler->display->display_options['empty']['area']['format'] = '1';
   /* Relationship: Flags: bookmarked_users */
   $handler->display->display_options['relationships']['flag_content_rel']['id'] = 'flag_content_rel';
@@ -674,17 +997,6 @@ $view = views_get_current_view();
   $handler->display->display_options['fields']['name']['table'] = 'users';
   $handler->display->display_options['fields']['name']['field'] = 'name';
   $handler->display->display_options['fields']['name']['hide_alter_empty'] = FALSE;
-  /* Field: Broken/missing handler */
-  $handler->display->display_options['fields']['field_user_photo_fid']['id'] = 'field_user_photo_fid';
-  $handler->display->display_options['fields']['field_user_photo_fid']['table'] = 'node_data_field_user_photo';
-  $handler->display->display_options['fields']['field_user_photo_fid']['field'] = 'field_user_photo_fid';
-  $handler->display->display_options['fields']['field_user_photo_fid']['relationship'] = 'content_profile_rel';
-  $handler->display->display_options['fields']['field_user_photo_fid']['label'] = 'User Photo';
-  $handler->display->display_options['fields']['field_user_photo_fid']['alter']['make_link'] = TRUE;
-  $handler->display->display_options['fields']['field_user_photo_fid']['alter']['path'] = 'users/[name]';
-  $handler->display->display_options['fields']['field_user_photo_fid']['alter']['absolute'] = TRUE;
-  $handler->display->display_options['fields']['field_user_photo_fid']['hide_empty'] = TRUE;
-  $handler->display->display_options['fields']['field_user_photo_fid']['hide_alter_empty'] = FALSE;
   /* Field: Flags: Flagged time */
   $handler->display->display_options['fields']['timestamp']['id'] = 'timestamp';
   $handler->display->display_options['fields']['timestamp']['table'] = 'flagging';
@@ -707,8 +1019,85 @@ $view = views_get_current_view();
   $handler->display->display_options['menu']['type'] = 'normal';
   $handler->display->display_options['menu']['title'] = 'My bookmarked members';
   $handler->display->display_options['menu']['weight'] = '0';
-  $export['my_bookmarked_users'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: referrable_users_for_recommendations
+  $view = new view();
+  $view->name = 'referrable_users_for_recommendations';
+  $view->description = '';
+  $view->tag = 'default';
+  $view->base_table = 'users';
+  $view->human_name = 'referrable users for recommendations';
+  $view->core = 7;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'access user profiles';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['style_plugin'] = 'default';
+  $handler->display->display_options['row_plugin'] = 'fields';
+  /* Field: User: Name */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['label'] = '';
+  $handler->display->display_options['fields']['name']['alter']['word_boundary'] = FALSE;
+  $handler->display->display_options['fields']['name']['alter']['ellipsis'] = FALSE;
+  /* Field: User: Uid */
+  $handler->display->display_options['fields']['uid']['id'] = 'uid';
+  $handler->display->display_options['fields']['uid']['table'] = 'users';
+  $handler->display->display_options['fields']['uid']['field'] = 'uid';
+  $handler->display->display_options['fields']['uid']['exclude'] = TRUE;
+  /* Sort criterion: User: Created date */
+  $handler->display->display_options['sorts']['created']['id'] = 'created';
+  $handler->display->display_options['sorts']['created']['table'] = 'users';
+  $handler->display->display_options['sorts']['created']['field'] = 'created';
+  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
+  /* Filter criterion: User: Active */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'users';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = '1';
+  $handler->display->display_options['filters']['status']['group'] = 1;
+  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+  /* Filter criterion: Global: PHP */
+  $handler->display->display_options['filters']['php']['id'] = 'php';
+  $handler->display->display_options['filters']['php']['table'] = 'views';
+  $handler->display->display_options['filters']['php']['field'] = 'php';
+  $handler->display->display_options['filters']['php']['use_php_setup'] = 0;
+  $handler->display->display_options['filters']['php']['php_filter'] = 'global $user;
+return $row->uid == $user->uid;';
+  /* Filter criterion: User: Roles */
+  $handler->display->display_options['filters']['rid']['id'] = 'rid';
+  $handler->display->display_options['filters']['rid']['table'] = 'users_roles';
+  $handler->display->display_options['filters']['rid']['field'] = 'rid';
+  $handler->display->display_options['filters']['rid']['value'] = array(
+    8 => '8',
+  );
+
+  /* Display: References */
+  $handler = $view->new_display('references', 'References', 'references_1');
+  $handler->display->display_options['defaults']['title'] = FALSE;
+  $handler->display->display_options['pager']['type'] = 'none';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'references_style';
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['row_plugin'] = 'references_fields';
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
+
+  $views[$view->name] = $view;
+
+  // Exported view: rig_view_d7
   $view = new view();
   $view->name = 'rig_view_d7';
   $view->description = '';
@@ -796,209 +1185,10 @@ $view = views_get_current_view();
       'label' => 'Profile: User uid',
     ),
   );
-  $export['rig_view_d7'] = $view;
 
-  $view = new view();
-  $view->name = 'searchUserListingsMoreOptions';
-  $view->description = 'listing of close users';
-  $view->tag = '';
-  $view->base_table = 'node';
-  $view->human_name = '';
-  $view->core = 6;
-  $view->api_version = '3.0';
-  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+  $views[$view->name] = $view;
 
-  /* Display: Defaults */
-  $handler = $view->new_display('default', 'Defaults', 'default');
-  $handler->display->display_options['title'] = 'Search Results';
-  $handler->display->display_options['css_class'] = 'search-results';
-  $handler->display->display_options['use_more_always'] = FALSE;
-  $handler->display->display_options['access']['type'] = 'none';
-  $handler->display->display_options['cache']['type'] = 'none';
-  $handler->display->display_options['query']['type'] = 'views_query';
-  $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['pager']['type'] = 'full';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
-  $handler->display->display_options['pager']['options']['offset'] = '0';
-  $handler->display->display_options['pager']['options']['id'] = '0';
-  $handler->display->display_options['style_plugin'] = 'list';
-  $handler->display->display_options['style_options']['type'] = 'ol';
-  $handler->display->display_options['row_plugin'] = 'fields';
-  /* Header: Global: Text area */
-  $handler->display->display_options['header']['area']['id'] = 'area';
-  $handler->display->display_options['header']['area']['table'] = 'views';
-  $handler->display->display_options['header']['area']['field'] = 'area';
-  $handler->display->display_options['header']['area']['label'] = 'Text area';
-  $handler->display->display_options['header']['area']['content'] = 'Click on a marker to see the name of the member and link to their profile. Double click on an unmarked area to zoom in.';
-  $handler->display->display_options['header']['area']['format'] = '1';
-  /* No results behavior: Global: Text area */
-  $handler->display->display_options['empty']['area']['id'] = 'area';
-  $handler->display->display_options['empty']['area']['table'] = 'views';
-  $handler->display->display_options['empty']['area']['field'] = 'area';
-  /* Relationship: User: Profile */
-  $handler->display->display_options['relationships']['profile']['id'] = 'profile';
-  $handler->display->display_options['relationships']['profile']['table'] = 'users';
-  $handler->display->display_options['relationships']['profile']['field'] = 'profile';
-  $handler->display->display_options['relationships']['profile']['relationship'] = 'uid';
-  $handler->display->display_options['relationships']['profile']['required'] = TRUE;
-  $handler->display->display_options['relationships']['profile']['bundle_types'] = array(
-    'boondocking_available' => 'boondocking_available',
-  );
-  /* Relationship: Content: Author */
-  $handler->display->display_options['relationships']['uid']['id'] = 'uid';
-  $handler->display->display_options['relationships']['uid']['table'] = 'node';
-  $handler->display->display_options['relationships']['uid']['field'] = 'uid';
-  /* Relationship: Content: Author */
-  $handler->display->display_options['relationships']['uid_1']['id'] = 'uid_1';
-  $handler->display->display_options['relationships']['uid_1']['table'] = 'node';
-  $handler->display->display_options['relationships']['uid_1']['field'] = 'uid';
-  /* Field: User: Name */
-  $handler->display->display_options['fields']['name']['id'] = 'name';
-  $handler->display->display_options['fields']['name']['table'] = 'users';
-  $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['relationship'] = 'uid';
-  $handler->display->display_options['fields']['name']['label'] = '';
-  /* Field: Location: City */
-  $handler->display->display_options['fields']['city']['id'] = 'city';
-  $handler->display->display_options['fields']['city']['table'] = 'location';
-  $handler->display->display_options['fields']['city']['field'] = 'city';
-  /* Field: Location: Latitude */
-  $handler->display->display_options['fields']['latitude']['id'] = 'latitude';
-  $handler->display->display_options['fields']['latitude']['table'] = 'location';
-  $handler->display->display_options['fields']['latitude']['field'] = 'latitude';
-  $handler->display->display_options['fields']['latitude']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['latitude']['style'] = 'dd';
-  /* Field: Location: Longitude */
-  $handler->display->display_options['fields']['longitude']['id'] = 'longitude';
-  $handler->display->display_options['fields']['longitude']['table'] = 'location';
-  $handler->display->display_options['fields']['longitude']['field'] = 'longitude';
-  $handler->display->display_options['fields']['longitude']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['longitude']['style'] = 'dd';
-  /* Sort criterion: Location: Distance / Proximity */
-  $handler->display->display_options['sorts']['distance']['id'] = 'distance';
-  $handler->display->display_options['sorts']['distance']['table'] = 'location';
-  $handler->display->display_options['sorts']['distance']['field'] = 'distance';
-  $handler->display->display_options['sorts']['distance']['origin'] = 'php';
-  $handler->display->display_options['sorts']['distance']['php_code'] = '$lld_array = explode ("_", arg(1));
-$ll_array = explode (",", $lld_array[0]);
-
-$ll["latitude"] = (float)$ll_array[0];
-$ll["longitude"] = (float)$ll_array[1];
-
-return $ll;';
-  /* Contextual filter: Location: Distance / Proximity */
-  $handler->display->display_options['arguments']['distance']['id'] = 'distance';
-  $handler->display->display_options['arguments']['distance']['table'] = 'location';
-  $handler->display->display_options['arguments']['distance']['field'] = 'distance';
-  $handler->display->display_options['arguments']['distance']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['distance']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['distance']['type'] = 'latlon';
-  /* Filter criterion: Content: Type */
-  $handler->display->display_options['filters']['type']['id'] = 'type';
-  $handler->display->display_options['filters']['type']['table'] = 'node';
-  $handler->display->display_options['filters']['type']['field'] = 'type';
-  $handler->display->display_options['filters']['type']['value'] = array(
-    'boondocking_available' => 'boondocking_available',
-  );
-  $handler->display->display_options['filters']['type']['expose']['operator'] = FALSE;
-  /* Filter criterion: User: Roles */
-  $handler->display->display_options['filters']['rid']['id'] = 'rid';
-  $handler->display->display_options['filters']['rid']['table'] = 'users_roles';
-  $handler->display->display_options['filters']['rid']['field'] = 'rid';
-  $handler->display->display_options['filters']['rid']['relationship'] = 'uid_1';
-  $handler->display->display_options['filters']['rid']['operator'] = 'not';
-  $handler->display->display_options['filters']['rid']['value'] = array(
-    6 => '6',
-  );
-  /* Filter criterion: User: Roles */
-  $handler->display->display_options['filters']['rid_1']['id'] = 'rid_1';
-  $handler->display->display_options['filters']['rid_1']['table'] = 'users_roles';
-  $handler->display->display_options['filters']['rid_1']['field'] = 'rid';
-  $handler->display->display_options['filters']['rid_1']['relationship'] = 'uid_1';
-  $handler->display->display_options['filters']['rid_1']['value'] = array(
-    8 => '8',
-  );
-  $handler->display->display_options['filters']['rid_1']['group'] = '0';
-
-  /* Display: Search Listings Pane */
-  $handler = $view->new_display('panel_pane', 'Search Listings Pane', 'panel_pane_1');
-  $handler->display->display_options['defaults']['title'] = FALSE;
-  $handler->display->display_options['title'] = 'Search Results';
-  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
-  $handler->display->display_options['style_plugin'] = 'list';
-  $handler->display->display_options['defaults']['style_options'] = FALSE;
-  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
-  $handler->display->display_options['row_plugin'] = 'fields';
-  $handler->display->display_options['defaults']['row_options'] = FALSE;
-
-  /* Display: Search Listings Page */
-  $handler = $view->new_display('page', 'Search Listings Page', 'page_1');
-  $handler->display->display_options['defaults']['empty'] = FALSE;
-  $handler->display->display_options['path'] = 'SearchListings';
-
-  /* Display: Search Listings Map Attachment */
-  $handler = $view->new_display('attachment', 'Search Listings Map Attachment', 'attachment_1');
-  $handler->display->display_options['pager']['type'] = 'some';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
-  $handler->display->display_options['pager']['options']['offset'] = '0';
-  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
-  $handler->display->display_options['style_plugin'] = 'gmap';
-  $handler->display->display_options['style_options']['grouping'] = '';
-  $handler->display->display_options['style_options']['macro'] = '[gmap width=100%| height=600px]';
-  $handler->display->display_options['style_options']['markertype'] = 'numbers';
-  $handler->display->display_options['style_options']['latfield'] = 'name';
-  $handler->display->display_options['style_options']['lonfield'] = 'name';
-  $handler->display->display_options['style_options']['markerfield'] = 'name';
-  $handler->display->display_options['style_options']['enablermt'] = 0;
-  $handler->display->display_options['style_options']['rmtfield'] = 'name';
-  $handler->display->display_options['style_options']['center_on_nodearg_arg'] = 'distance';
-  $handler->display->display_options['style_options']['highlight_nodearg_arg'] = 'distance';
-  $handler->display->display_options['style_options']['tooltipfield'] = 'name';
-  $handler->display->display_options['defaults']['style_options'] = FALSE;
-  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
-  $handler->display->display_options['row_plugin'] = 'fields';
-  $handler->display->display_options['defaults']['row_options'] = FALSE;
-  $handler->display->display_options['defaults']['header'] = FALSE;
-  $handler->display->display_options['defaults']['empty'] = FALSE;
-  /* No results behavior: Global: Text area */
-  $handler->display->display_options['empty']['area']['id'] = 'area';
-  $handler->display->display_options['empty']['area']['table'] = 'views';
-  $handler->display->display_options['empty']['area']['field'] = 'area';
-  $handler->display->display_options['empty']['area']['empty'] = TRUE;
-  $handler->display->display_options['empty']['area']['content'] = '<?php
-  $lld_array = explode ("_", arg(1));
-  $ll_array = explode (",", $lld_array[0]);
-
-  $query = array(\'lat\' => (float)$ll_array[0],
-                 \'lng\' => (float)$ll_array[1],
-                 \'maxrows\' => 1);
-  $options = array(\'columns\' => array(\'name\',\'countryname\'));
-  $reverse_lookup = geonames_query(\'nearbyplace\', $query, $options);
-
-  echo \'No boondocking locations with your search criteria were found near your location of \' 
-    . $reverse_lookup->results[0][\'name\'] . \', \' 
-    . $reverse_lookup->results[0][\'countryname\'] 
-    . \'.\';
-?>
-<p> If this was not your intended search location, please be more specific in your search location string.
-<p>
-Otherwise, try <a href="javascript:javascript:history.go(-1)">going back</a> and increasing your search radius, or removing some of your search limitations. You can also see a <a href="/showAllUsersMap">map of all available boondocking locations</a>.';
-  $handler->display->display_options['empty']['area']['format'] = '3';
-  $handler->display->display_options['defaults']['fields'] = FALSE;
-  /* Field: User: Name */
-  $handler->display->display_options['fields']['name']['id'] = 'name';
-  $handler->display->display_options['fields']['name']['table'] = 'users';
-  $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['label'] = '';
-  $handler->display->display_options['displays'] = array(
-    'page_1' => 'page_1',
-    'default' => 0,
-    'panel_pane_1' => 0,
-    'page_2' => 0,
-  );
-  $handler->display->display_options['inherit_pager'] = TRUE;
-  $export['searchUserListingsMoreOptions'] = $view;
-
+  // Exported view: searchlocationresults
   $view = new view();
   $view->name = 'searchlocationresults';
   $view->description = 'Search Map';
@@ -1035,6 +1225,30 @@ Otherwise, try <a href="javascript:javascript:history.go(-1)">going back</a> and
   $handler->display->display_options['style_options']['tooltipfield'] = 'name';
   $handler->display->display_options['style_options']['bubbletextfield'] = 'name';
   $handler->display->display_options['row_plugin'] = 'fields';
+  /* No results behavior: Global: PHP */
+  $handler->display->display_options['empty']['php']['id'] = 'php';
+  $handler->display->display_options['empty']['php']['table'] = 'views';
+  $handler->display->display_options['empty']['php']['field'] = 'php';
+  $handler->display->display_options['empty']['php']['label'] = 'Empty view message';
+  $handler->display->display_options['empty']['php']['empty'] = TRUE;
+  $handler->display->display_options['empty']['php']['php_output'] = '<h3>No Results Found</h3>
+<?php
+  $lld_array = explode ("_", arg(1));
+  $ll_array = explode (",", $lld_array[0]);
+
+  $query = array(\'lat\' => (float)$ll_array[0],
+                 \'lng\' => (float)$ll_array[1],
+                 \'maxrows\' => 1);
+  $options = array(\'columns\' => array(\'name\',\'countryname\'));
+  $reverse_lookup = geonames_query(\'nearbyplace\', $query, $options);
+  echo \'<p>No boondocking locations with your search criteria were found near your location of \' 
+    . $reverse_lookup->results[0][\'name\'] . \', \' 
+    . $reverse_lookup->results[0][\'countryname\'] 
+    . \'.</p>\';
+?>
+<p> If this was not your intended search location, please be more specific in your search location string.
+<p>
+Otherwise, try <a href="javascript:javascript:history.go(-1)">going back</a> and increasing your search radius, or removing some of your search limitations. You can also see a <a href="/showAllUsersMap">map of all available boondocking locations</a>.';
   /* Relationship: Profile: Your Location (field_boondock_location) */
   $handler->display->display_options['relationships']['field_boondock_location_lid']['id'] = 'field_boondock_location_lid';
   $handler->display->display_options['relationships']['field_boondock_location_lid']['table'] = 'field_data_field_boondock_location';
@@ -1050,6 +1264,7 @@ Otherwise, try <a href="javascript:javascript:history.go(-1)">going back</a> and
   $handler->display->display_options['relationships']['profile']['field'] = 'profile';
   $handler->display->display_options['relationships']['profile']['relationship'] = 'user';
   $handler->display->display_options['relationships']['profile']['label'] = 'User Profile';
+  $handler->display->display_options['relationships']['profile']['required'] = TRUE;
   $handler->display->display_options['relationships']['profile']['bundle_types'] = array(
     'profile' => 'profile',
   );
@@ -1060,18 +1275,6 @@ Otherwise, try <a href="javascript:javascript:history.go(-1)">going back</a> and
   $handler->display->display_options['fields']['name']['relationship'] = 'user';
   $handler->display->display_options['fields']['name']['label'] = '';
   $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
-  /* Field: Profile: User Photo */
-  $handler->display->display_options['fields']['field_user_photo']['id'] = 'field_user_photo';
-  $handler->display->display_options['fields']['field_user_photo']['table'] = 'field_data_field_user_photo';
-  $handler->display->display_options['fields']['field_user_photo']['field'] = 'field_user_photo';
-  $handler->display->display_options['fields']['field_user_photo']['relationship'] = 'profile';
-  $handler->display->display_options['fields']['field_user_photo']['label'] = '';
-  $handler->display->display_options['fields']['field_user_photo']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_user_photo']['click_sort_column'] = 'fid';
-  $handler->display->display_options['fields']['field_user_photo']['settings'] = array(
-    'image_style' => 'thumbnail',
-    'image_link' => '',
-  );
   /* Field: Profile: Your Location */
   $handler->display->display_options['fields']['field_boondock_location']['id'] = 'field_boondock_location';
   $handler->display->display_options['fields']['field_boondock_location']['table'] = 'field_data_field_boondock_location';
@@ -1101,18 +1304,6 @@ print $string;
 ?>';
   $handler->display->display_options['fields']['php']['use_php_click_sortable'] = '0';
   $handler->display->display_options['fields']['php']['php_click_sortable'] = '';
-  /* Field: Profile: Your Age Range */
-  $handler->display->display_options['fields']['field_user_age_range']['id'] = 'field_user_age_range';
-  $handler->display->display_options['fields']['field_user_age_range']['table'] = 'field_data_field_user_age_range';
-  $handler->display->display_options['fields']['field_user_age_range']['field'] = 'field_user_age_range';
-  $handler->display->display_options['fields']['field_user_age_range']['relationship'] = 'profile';
-  $handler->display->display_options['fields']['field_user_age_range']['label'] = 'Host\'s Age Range';
-  $handler->display->display_options['fields']['field_user_age_range']['element_type'] = 'span';
-  /* Field: Profile: Max Nights */
-  $handler->display->display_options['fields']['field_ba_max_nights']['id'] = 'field_ba_max_nights';
-  $handler->display->display_options['fields']['field_ba_max_nights']['table'] = 'field_data_field_ba_max_nights';
-  $handler->display->display_options['fields']['field_ba_max_nights']['field'] = 'field_ba_max_nights';
-  $handler->display->display_options['fields']['field_ba_max_nights']['element_type'] = 'span';
   /* Field: Profile: Max RV Length */
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['id'] = 'field_ba_max_rv_length_int';
   $handler->display->display_options['fields']['field_ba_max_rv_length_int']['table'] = 'field_data_field_ba_max_rv_length_int';
@@ -1143,6 +1334,15 @@ print $string;
   $handler->display->display_options['arguments']['field_ba_max_rv_length_int_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_ba_max_rv_length_int_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_ba_max_rv_length_int_value']['break_phrase'] = TRUE;
+  /* Contextual filter: Profile: Number of Spots (field_ba_number_of_spots) */
+  $handler->display->display_options['arguments']['field_ba_number_of_spots_value']['id'] = 'field_ba_number_of_spots_value';
+  $handler->display->display_options['arguments']['field_ba_number_of_spots_value']['table'] = 'field_data_field_ba_number_of_spots';
+  $handler->display->display_options['arguments']['field_ba_number_of_spots_value']['field'] = 'field_ba_number_of_spots_value';
+  $handler->display->display_options['arguments']['field_ba_number_of_spots_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_ba_number_of_spots_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_ba_number_of_spots_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_ba_number_of_spots_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_ba_number_of_spots_value']['break_phrase'] = TRUE;
   /* Contextual filter: Profile: Pull Through Parking Available (field_ba_pullthrough_spot) */
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['id'] = 'field_ba_pullthrough_spot_value';
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['table'] = 'field_data_field_ba_pullthrough_spot';
@@ -1152,6 +1352,24 @@ print $string;
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_ba_pullthrough_spot_value']['limit'] = '0';
+  /* Contextual filter: Profile: ba_electric_hookup_computed (field_ba_electric_hookup_compute) */
+  $handler->display->display_options['arguments']['field_ba_electric_hookup_compute_value']['id'] = 'field_ba_electric_hookup_compute_value';
+  $handler->display->display_options['arguments']['field_ba_electric_hookup_compute_value']['table'] = 'field_data_field_ba_electric_hookup_compute';
+  $handler->display->display_options['arguments']['field_ba_electric_hookup_compute_value']['field'] = 'field_ba_electric_hookup_compute_value';
+  $handler->display->display_options['arguments']['field_ba_electric_hookup_compute_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_ba_electric_hookup_compute_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_ba_electric_hookup_compute_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_ba_electric_hookup_compute_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_ba_electric_hookup_compute_value']['limit'] = '0';
+  /* Contextual filter: Profile: ba_water_hookup_computed (field_ba_water_hookup_computed) */
+  $handler->display->display_options['arguments']['field_ba_water_hookup_computed_value']['id'] = 'field_ba_water_hookup_computed_value';
+  $handler->display->display_options['arguments']['field_ba_water_hookup_computed_value']['table'] = 'field_data_field_ba_water_hookup_computed';
+  $handler->display->display_options['arguments']['field_ba_water_hookup_computed_value']['field'] = 'field_ba_water_hookup_computed_value';
+  $handler->display->display_options['arguments']['field_ba_water_hookup_computed_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_ba_water_hookup_computed_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_ba_water_hookup_computed_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_ba_water_hookup_computed_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_ba_water_hookup_computed_value']['limit'] = '0';
   /* Contextual filter: Profile: Slideouts/Awnings Allowed (field_ba_slideout_awning) */
   $handler->display->display_options['arguments']['field_ba_slideout_awning_value']['id'] = 'field_ba_slideout_awning_value';
   $handler->display->display_options['arguments']['field_ba_slideout_awning_value']['table'] = 'field_data_field_ba_slideout_awning';
@@ -1179,6 +1397,36 @@ print $string;
   $handler->display->display_options['arguments']['field_ba_pets_welcome_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_ba_pets_welcome_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_ba_pets_welcome_value']['limit'] = '0';
+  /* Contextual filter: Profile: FMCA Member (field_fmca_member) */
+  $handler->display->display_options['arguments']['field_fmca_member_value']['id'] = 'field_fmca_member_value';
+  $handler->display->display_options['arguments']['field_fmca_member_value']['table'] = 'field_data_field_fmca_member';
+  $handler->display->display_options['arguments']['field_fmca_member_value']['field'] = 'field_fmca_member_value';
+  $handler->display->display_options['arguments']['field_fmca_member_value']['relationship'] = 'profile';
+  $handler->display->display_options['arguments']['field_fmca_member_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_fmca_member_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_fmca_member_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_fmca_member_value']['summary_options']['items_per_page'] = '25';
+  /* Contextual filter: Profile: Escapee Member (field_escapee_member) */
+  $handler->display->display_options['arguments']['field_escapee_member_value']['id'] = 'field_escapee_member_value';
+  $handler->display->display_options['arguments']['field_escapee_member_value']['table'] = 'field_data_field_escapee_member';
+  $handler->display->display_options['arguments']['field_escapee_member_value']['field'] = 'field_escapee_member_value';
+  $handler->display->display_options['arguments']['field_escapee_member_value']['relationship'] = 'profile';
+  $handler->display->display_options['arguments']['field_escapee_member_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_escapee_member_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_escapee_member_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_escapee_member_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_escapee_member_value']['validate']['type'] = 'php';
+  $handler->display->display_options['arguments']['field_escapee_member_value']['validate_options']['code'] = 'dd($handler->argument);
+return TRUE;';
+  /* Contextual filter: Profile: RVillage Member (field_rvillage_member) */
+  $handler->display->display_options['arguments']['field_rvillage_member_value']['id'] = 'field_rvillage_member_value';
+  $handler->display->display_options['arguments']['field_rvillage_member_value']['table'] = 'field_data_field_rvillage_member';
+  $handler->display->display_options['arguments']['field_rvillage_member_value']['field'] = 'field_rvillage_member_value';
+  $handler->display->display_options['arguments']['field_rvillage_member_value']['relationship'] = 'profile';
+  $handler->display->display_options['arguments']['field_rvillage_member_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_rvillage_member_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_rvillage_member_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_rvillage_member_value']['summary_options']['items_per_page'] = '25';
   /* Filter criterion: Profile: Type */
   $handler->display->display_options['filters']['type']['id'] = 'type';
   $handler->display->display_options['filters']['type']['table'] = 'profile';
@@ -1203,6 +1451,19 @@ print $string;
   $handler->display->display_options['filters']['rid_1']['value'] = array(
     8 => '8',
   );
+  /* Filter criterion: Profile: Do you have a boondocking location available on your property? (field_ba_bda_pref) */
+  $handler->display->display_options['filters']['field_ba_bda_pref_value']['id'] = 'field_ba_bda_pref_value';
+  $handler->display->display_options['filters']['field_ba_bda_pref_value']['table'] = 'field_data_field_ba_bda_pref';
+  $handler->display->display_options['filters']['field_ba_bda_pref_value']['field'] = 'field_ba_bda_pref_value';
+  $handler->display->display_options['filters']['field_ba_bda_pref_value']['value'] = array(
+    0 => '0',
+  );
+  /* Filter criterion: User: Active */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'users';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['relationship'] = 'user';
+  $handler->display->display_options['filters']['status']['value'] = '1';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
@@ -1246,6 +1507,14 @@ print $string;
   $handler->display->display_options['defaults']['row_plugin'] = FALSE;
   $handler->display->display_options['row_plugin'] = 'fields';
   $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['empty'] = FALSE;
+  /* No results behavior: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['empty'] = TRUE;
+  $handler->display->display_options['empty']['area']['content'] = '<!-- empty -->';
+  $handler->display->display_options['empty']['area']['format'] = '5';
   $handler->display->display_options['defaults']['fields'] = FALSE;
   /* Field: User: Name */
   $handler->display->display_options['fields']['name']['id'] = 'name';
@@ -1254,13 +1523,21 @@ print $string;
   $handler->display->display_options['fields']['name']['relationship'] = 'user';
   $handler->display->display_options['fields']['name']['label'] = '';
   $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
+  /* Field: Profile: Your Location */
+  $handler->display->display_options['fields']['field_boondock_location']['id'] = 'field_boondock_location';
+  $handler->display->display_options['fields']['field_boondock_location']['table'] = 'field_data_field_boondock_location';
+  $handler->display->display_options['fields']['field_boondock_location']['field'] = 'field_boondock_location';
+  $handler->display->display_options['fields']['field_boondock_location']['label'] = '';
+  $handler->display->display_options['fields']['field_boondock_location']['element_label_colon'] = FALSE;
   $handler->display->display_options['displays'] = array(
     'page' => 'page',
     'default' => 0,
   );
   $handler->display->display_options['inherit_pager'] = TRUE;
-  $export['searchlocationresults'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: testimonials
   $view = new view();
   $view->name = 'testimonials';
   $view->description = 'Boondockers Welcome Testimonials';
@@ -1277,12 +1554,14 @@ print $string;
   $handler->display->display_options['css_class'] = 'testimonial-data';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'none';
+  $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['style_plugin'] = 'default';
   $handler->display->display_options['style_options']['row_class'] = 'testimonial-page-row';
   $handler->display->display_options['row_plugin'] = 'node';
+  $handler->display->display_options['row_options']['links'] = FALSE;
   /* Header: Global: Text area */
   $handler->display->display_options['header']['area']['id'] = 'area';
   $handler->display->display_options['header']['area']['table'] = 'views';
@@ -1334,6 +1613,15 @@ print $string;
   $handler->display->display_options['pager']['type'] = 'some';
   $handler->display->display_options['pager']['options']['items_per_page'] = '2';
   $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'default';
+  $handler->display->display_options['style_options']['row_class'] = 'testimonial-page-row';
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['row_plugin'] = 'node';
+  $handler->display->display_options['row_options']['view_mode'] = 'full';
+  $handler->display->display_options['row_options']['links'] = FALSE;
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
   $handler->display->display_options['link_to_view'] = '0';
 
   /* Display: Page */
@@ -1347,6 +1635,7 @@ print $string;
   $handler->display->display_options['defaults']['row_plugin'] = FALSE;
   $handler->display->display_options['row_plugin'] = 'node';
   $handler->display->display_options['row_options']['view_mode'] = 'full';
+  $handler->display->display_options['row_options']['links'] = FALSE;
   $handler->display->display_options['defaults']['row_options'] = FALSE;
   $handler->display->display_options['defaults']['header'] = FALSE;
   /* Header: Global: Text area */
@@ -1356,8 +1645,10 @@ print $string;
   $handler->display->display_options['header']['area']['label'] = 'Text area';
   $handler->display->display_options['header']['area']['format'] = '2';
   $handler->display->display_options['path'] = 'testimonials';
-  $export['testimonials'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: user_bda_photos_d7
   $view = new view();
   $view->name = 'user_bda_photos_d7';
   $view->description = '';
@@ -1468,8 +1759,10 @@ print $string;
       'label' => 'Profile: User uid',
     ),
   );
-  $export['user_bda_photos_d7'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: user_photos_d7
   $view = new view();
   $view->name = 'user_photos_d7';
   $view->description = '';
@@ -1586,8 +1879,10 @@ print $string;
       'label' => 'Profile: User uid',
     ),
   );
-  $export['user_photos_d7'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: user_profile_information
   $view = new view();
   $view->name = 'user_profile_information';
   $view->description = 'User Profile Information';
@@ -1600,7 +1895,6 @@ print $string;
 
   /* Display: Defaults */
   $handler = $view->new_display('default', 'Defaults', 'default');
-  $handler->display->display_options['title'] = 'Details';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
@@ -1621,6 +1915,7 @@ print $string;
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'users';
   $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['exclude'] = TRUE;
   $handler->display->display_options['fields']['name']['link_to_user'] = FALSE;
   /* Field: Profile: User Photo */
   $handler->display->display_options['fields']['field_user_photo']['id'] = 'field_user_photo';
@@ -1642,7 +1937,11 @@ print $string;
   $handler->display->display_options['fields']['field_user_age_range']['table'] = 'field_data_field_user_age_range';
   $handler->display->display_options['fields']['field_user_age_range']['field'] = 'field_user_age_range';
   $handler->display->display_options['fields']['field_user_age_range']['relationship'] = 'profile';
-  $handler->display->display_options['fields']['field_user_age_range']['label'] = 'Age Range';
+  $handler->display->display_options['fields']['field_user_age_range']['label'] = '';
+  $handler->display->display_options['fields']['field_user_age_range']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_user_age_range']['alter']['text'] = '<span class="views-label views-label-field-user-age-range">[name]\'s age range:</span>
+<span class="field-content">[field_user_age_range]</span>';
+  $handler->display->display_options['fields']['field_user_age_range']['element_label_colon'] = FALSE;
   /* Field: Member Since */
   $handler->display->display_options['fields']['created']['id'] = 'created';
   $handler->display->display_options['fields']['created']['table'] = 'users';
@@ -1652,6 +1951,7 @@ print $string;
   $handler->display->display_options['fields']['created']['hide_empty'] = TRUE;
   $handler->display->display_options['fields']['created']['date_format'] = 'custom';
   $handler->display->display_options['fields']['created']['custom_date_format'] = 'M d, Y';
+  $handler->display->display_options['fields']['created']['second_date_format'] = 'privatemsg_current_day';
   /* Contextual filter: User: Name */
   $handler->display->display_options['arguments']['name']['id'] = 'name';
   $handler->display->display_options['arguments']['name']['table'] = 'users';
@@ -1681,8 +1981,10 @@ return TRUE;';
       'label' => 'User: Name',
     ),
   );
-  $export['user_profile_information'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: user_recommendations
   $view = new view();
   $view->name = 'user_recommendations';
   $view->description = 'User Recommendations';
@@ -1695,7 +1997,6 @@ return TRUE;';
 
   /* Display: Defaults */
   $handler = $view->new_display('default', 'Defaults', 'default');
-  $handler->display->display_options['title'] = 'User Recommendations';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
@@ -1704,35 +2005,6 @@ return TRUE;';
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['style_plugin'] = 'default';
   $handler->display->display_options['row_plugin'] = 'fields';
-  /* Header: Global: Text area */
-  $handler->display->display_options['header']['area']['id'] = 'area';
-  $handler->display->display_options['header']['area']['table'] = 'views';
-  $handler->display->display_options['header']['area']['field'] = 'area';
-  $handler->display->display_options['header']['area']['label'] = 'Text area';
-  $handler->display->display_options['header']['area']['content'] = '<?php
-  global $user;
-  if (arg(1) != $user->uid)
-  {
-     if (user_access("create user_recommendation content"))
-    {
-      print("<p>Have you stayed with this member or hosted them on your property? <br><a href=\'/node/add/user-recommendation/");
-      print(arg(1)); 
-      print("\'>Add a recommendation for this member</a></p>");
-    }
-    else
-    {
-      if ($user->uid == 0)
-      {
-        print("<p>You must <a href=\'/user\'> log in</a> to add a recommendation for this member </p>");
-      }
-      else
-      {
-        print("<p>You must become a <a href=\'/membership-products\'> full member</a> to add a recommendation for this member </p>");
-      }
-    }
-  }
-?>';
-  $handler->display->display_options['header']['area']['format'] = '3';
   /* Footer: Global: Text area */
   $handler->display->display_options['footer']['area']['id'] = 'area';
   $handler->display->display_options['footer']['area']['table'] = 'views';
@@ -1748,28 +2020,12 @@ return TRUE;';
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['label'] = 'Text area';
+  $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = '<?php
   global $user;
   if (arg(1) != $user->uid)
   {
     print("There are currently no recommendations for this member.");
-    if (user_access("create user_recommendation content"))
-    {
-      print("<p>Have you stayed with this member or hosted them on your property?<br><a href=\'/node/add/user-recommendation/");
-      print(arg(1)); 
-      print("\'>Add a recommendation for this member</a></p>");
-    }
-    else
-    {
-      if ($user->uid == 0)
-      {
-        print("<p>You must <a href=\'/user\'> log in</a> to add a recommendation for this member </p>");
-      }
-      else
-      {
-        print("<p>You must become a <a href=\'/membership-products\'> full member</a> to add a recommendation for this member </p>");
-      }
-    }
   }
   else
   {
@@ -1901,7 +2157,7 @@ return TRUE;';
   $handler->display->display_options['fields']['body']['table'] = 'field_data_body';
   $handler->display->display_options['fields']['body']['field'] = 'body';
   $handler->display->display_options['fields']['body']['label'] = '';
-  $handler->display->display_options['fields']['body']['alter']['max_length'] = '200';
+  $handler->display->display_options['fields']['body']['alter']['max_length'] = '300';
   $handler->display->display_options['fields']['body']['alter']['more_link'] = TRUE;
   $handler->display->display_options['fields']['body']['alter']['more_link_text'] = 'Read more';
   $handler->display->display_options['fields']['body']['alter']['more_link_path'] = '[path]';
@@ -1934,8 +2190,94 @@ return TRUE;';
   $handler->display->display_options['defaults']['title'] = FALSE;
   $handler->display->display_options['title'] = 'User Recommendations for %1';
   $handler->display->display_options['path'] = 'user-recommendations/%';
-  $export['user_recommendations'] = $view;
 
+  $views[$view->name] = $view;
+
+  // Exported view: user_response_rate
+  $view = new view();
+  $view->name = 'user_response_rate';
+  $view->description = 'View with basic user response rate data to go in a panel on user page';
+  $view->tag = '';
+  $view->base_table = 'users';
+  $view->human_name = 'Response Rate';
+  $view->core = 6;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Defaults */
+  $handler = $view->new_display('default', 'Defaults', 'default');
+  $handler->display->display_options['title'] = 'Response Rate';
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'none';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['style_plugin'] = 'default';
+  $handler->display->display_options['row_plugin'] = 'fields';
+  /* No results behavior: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['content'] = 'No response rate is available for this user. See our FAQ about response rates for more details.';
+  $handler->display->display_options['empty']['area']['format'] = '2';
+  /* Field: Privatemsg: Response Rate */
+  $handler->display->display_options['fields']['response_rate']['id'] = 'response_rate';
+  $handler->display->display_options['fields']['response_rate']['table'] = 'pm_response_rate';
+  $handler->display->display_options['fields']['response_rate']['field'] = 'response_rate';
+  $handler->display->display_options['fields']['response_rate']['element_wrapper_type'] = '0';
+  $handler->display->display_options['fields']['response_rate']['suffix'] = '%';
+  /* Field: Global: PHP */
+  $handler->display->display_options['fields']['php']['id'] = 'php';
+  $handler->display->display_options['fields']['php']['table'] = 'views';
+  $handler->display->display_options['fields']['php']['field'] = 'php';
+  $handler->display->display_options['fields']['php']['label'] = '';
+  $handler->display->display_options['fields']['php']['element_type'] = '0';
+  $handler->display->display_options['fields']['php']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['php']['element_wrapper_type'] = '0';
+  $handler->display->display_options['fields']['php']['use_php_setup'] = 0;
+  $handler->display->display_options['fields']['php']['php_output'] = '<?php
+        $thumbsUpLoc = drupal_get_path(\'module\', \'pm_response_rate\') . \'/images/ThumbsUp.png\';
+        $thumbsDownLoc = drupal_get_path(\'module\', \'pm_response_rate\') . \'/images/ThumbsDown.png\';
+        if ($data->pm_response_rate_response_rate >= 80)
+        {
+           // output thumbs up
+           
+           echo "<img class=\'response-rate-icon\' src=\'/" . $thumbsUpLoc . "\' width=\'30px\'>";
+        }
+        else if ($data->pm_response_rate_response_rate <50)
+        {
+          // output thumbs down
+           echo "<img class=\'response-rate-icon\' src=\'/" . $thumbsDownLoc . "\' width=\'30px\'>";
+        }
+        ?>
+        ';
+  $handler->display->display_options['fields']['php']['use_php_click_sortable'] = '0';
+  $handler->display->display_options['fields']['php']['php_click_sortable'] = '';
+  /* Field: Privatemsg: Response Time */
+  $handler->display->display_options['fields']['response_time']['id'] = 'response_time';
+  $handler->display->display_options['fields']['response_time']['table'] = 'pm_response_rate';
+  $handler->display->display_options['fields']['response_time']['field'] = 'response_time';
+  $handler->display->display_options['fields']['response_time']['label'] = 'Average Response Time';
+  $handler->display->display_options['fields']['response_time']['element_wrapper_type'] = 'div';
+  /* Contextual filter: User: Uid */
+  $handler->display->display_options['arguments']['uid']['id'] = 'uid';
+  $handler->display->display_options['arguments']['uid']['table'] = 'users';
+  $handler->display->display_options['arguments']['uid']['field'] = 'uid';
+  $handler->display->display_options['arguments']['uid']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['uid']['summary']['format'] = 'default_summary';
+  /* Filter criterion: Privatemsg: Response Rate */
+  $handler->display->display_options['filters']['response_rate']['id'] = 'response_rate';
+  $handler->display->display_options['filters']['response_rate']['table'] = 'pm_response_rate';
+  $handler->display->display_options['filters']['response_rate']['field'] = 'response_rate';
+  $handler->display->display_options['filters']['response_rate']['operator'] = 'not empty';
+
+  /* Display: Response Rate Pane */
+  $handler = $view->new_display('panel_pane', 'Response Rate Pane', 'user_response_rate_pane');
+
+  $views[$view->name] = $view;
+
+  // Exported view: view_users_with_filter_d7
   $view = new view();
   $view->name = 'view_users_with_filter_d7';
   $view->description = '';
@@ -2314,7 +2656,8 @@ return TRUE;';
   $handler->display->display_options['path'] = 'showUserInfo';
   $handler->display->display_options['menu']['type'] = 'normal';
   $handler->display->display_options['menu']['title'] = 'View Users with Filter D7';
-  $export['view_users_with_filter_d7'] = $view;
 
-  return $export;
+  $views[$view->name] = $view;
+
+  return $views;
 }

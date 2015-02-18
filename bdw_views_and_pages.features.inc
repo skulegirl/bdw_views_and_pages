@@ -19,6 +19,8 @@ function bdw_views_and_pages_ctools_plugin_api($module = NULL, $api = NULL) {
 /**
  * Implements hook_views_api().
  */
-function bdw_views_and_pages_views_api($module = NULL, $api = NULL) {
-  return array("api" => "3.0");
+function bdw_views_and_pages_views_api() {
+  return array(
+    'api' => '3.0',
+  );
 }
